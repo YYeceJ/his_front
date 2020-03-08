@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "rootDir": "./",
+        "outDir": "../www",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "typeRoots": ["../node_modules/@types"]
+    },
+    "exclude": [
+        "../www",
+        "../node_modules"
+    ],
+    "include": [
+        "../node_modules/@types",
+        "./**/*"
+    ]
+}
