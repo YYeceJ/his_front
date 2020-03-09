@@ -1,4 +1,5 @@
 import React from 'react';
+import { GlobalDefinitions } from '../GlobalDefinitions';
 import createReducer from '../reducers';
 
 interface BundleProps { load: Promise<any>, props?: any, children?: any }
@@ -33,14 +34,14 @@ export default class Bundle extends React.Component<BundleProps, BundleState> {
             console.log("load success: component: " + component + ", reducers: " + reducers + ", sagas: " + sagas);
             // async inject reducers
             if( reducers != undefined) {
-                let asyncReducers = window.asyncReducers;
-                let store = window.store;
+                let asyncReducers = (window as GlobalDefinitions).asyncReducers;
+                let store = (window as GlobalDefinitions).store;
                 asyncReducers[reducers.name] = reducers.default;
                 store.replaceReducer(createReducer(asyncReducers));
             }
             // async inject sagas
             if(sagas != undefined) {
-                window.sagaMiddleware.run(sagas.default);
+                (window as GlobalDefinitions).sagaMiddleware.run(sagas.default);
             }
             // render component
             this.setState({

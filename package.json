@@ -93,7 +93,7 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/react-router-redux": "^5.0.17",
     "@types/redux-actions": "^2.3.1",
-    "antd": "^3.13.2",
+    "antd": "^3.26.13",
     "history": "^4.6.1",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.4.1",

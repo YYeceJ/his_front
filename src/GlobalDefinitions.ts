@@ -19,10 +19,23 @@ import { HEMPConfig } from './config';
 
 declare global {
     interface Window {
-        store: Store<{}>;  // redux state store
+        store: Store<any>,  // redux state store
+        authorization: string,
+        user: any,
         sagaMiddleware: SagaMiddleware<{}>;
         asyncReducers: {[key: string]: any};
         __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
         hempConfig: HEMPConfig;
+        appHistory: any,
+        userId: any,
+        username: any,
+        requestQueue: {path: string, options: any, resolve: any, reject: any}[],
+        tokenCookie: { access_token: string, refresh_token: string, token_type: string},
+        basePath: string
     }
 }
+
+export interface GlobalDefinitions extends Window {
+
+}
+

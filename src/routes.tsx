@@ -10,6 +10,7 @@ import Team3 from './containers/Team3';
 import Team5 from './containers/Team5';
 
 import Bundle from './utils/Bundle';
+import {DoctorManagementForm} from "./containers/DoctorManagement";
 
 export default function createRoutes() {
     return [
@@ -60,6 +61,10 @@ export default function createRoutes() {
         {
             path: "/team/team5",
             component: Team5
+        },
+        {
+            path: "/doctorManagement",
+            component: DoctorManagementForm
         },
     ];
 }

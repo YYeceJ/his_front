@@ -76,7 +76,9 @@ export class RootContainer extends React.Component<RootContainerStateProps & Roo
                             <Menu.Item key="7"><Link to="/team/team4">Team 4</Link></Menu.Item>
                             <Menu.Item key="8"><Link to="/team/team5">Team 5</Link></Menu.Item>
                         </SubMenu>
-
+                        <Menu.Item key="doctorManagement">
+                            <Link to="/doctorManagement"><span className="nav-text">医生管理</span></Link>
+                        </Menu.Item>
                     </Menu>
                 </Sider>
                 <Layout>
