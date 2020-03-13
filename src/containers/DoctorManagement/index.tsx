@@ -9,12 +9,13 @@ import {
     Input,
     Select,
     Col,
-    Row
+    Row, Spin, Tooltip
 } from 'antd';
 import {connect} from 'react-redux';
-import {queryDoctor, deleteDoctor, updateDoctor, addDoctor, queryDepartment, queryTitle} from './actions';
+import {queryDoctor, deleteDoctor, updateDoctor, addDoctor, queryDepartment} from './actions';
 import {RouteComponentProps} from 'react-router-dom';
 import {FormComponentProps} from "antd/lib/form";
+import style from "./style.scss";
 
 const FormItem = Form.Item;
 const {Option} = Select;
@@ -23,7 +24,6 @@ interface DoctorManagementOwnProps extends RouteComponentProps<any>, FormCompone
 }
 
 interface DoctorManagementStateProps {
-    titleList?: any,
     loading?: any,
     departmentList?: any,
     doctorList?: any,
@@ -35,12 +35,12 @@ interface DoctorManagementDispatchProps {
     updateDoctor?: Function,
     addDoctor?: Function,
     queryDepartment?: Function
-    queryTitle?: Function
 }
 
 interface DoctorManagementState {
     modalVisible?: boolean;
     modalFunction?: string;
+    currentRecord?: any;
 }
 
 @(connect(
@@ -49,7 +49,6 @@ interface DoctorManagementState {
             loading: state.doctorManagementReducer.loading,
             departmentList: state.doctorManagementReducer.departmentList,
             doctorList: state.doctorManagementReducer.doctorList,
-            titleList: state.doctorManagementReducer.titleList
         }
     ),
     (dispatch: any) => (
@@ -68,9 +67,6 @@ interface DoctorManagementState {
             },
             queryDepartment: (param: any) => {
                 dispatch(queryDepartment(param));
-            },
-            queryTitle: (param: any) => {
-                dispatch(queryTitle(param));
             }
         }
     )
@@ -81,16 +77,17 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
         super(props);
         this.state = {
             modalVisible: false,
-            modalFunction: ""
+            modalFunction: "",
+            currentRecord: {},
         }
     }
 
     componentDidMount() {
         this.props.queryDepartment();
-        this.props.queryTitle();
+        this.props.queryDoctor();
     }
 
-    handleCancelAddDoctor = () => {
+    handleAddDoctor = () => {
         this.setState({
             modalVisible: true,
             modalFunction: "add"
@@ -100,14 +97,14 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
     handleUpdate = (record: any) => {
         this.setState({
             modalVisible: true,
-            modalFunction: "update"
+            modalFunction: "update",
+            currentRecord: record
         }, () => {
             this.props.form.setFieldsValue({
-                doctorName: record.doctorName,
-                skilledField: record.skilledField,
-                departmentName: record.departmentName,
-                title: record.title,
-                practiceExperience: record.practiceExperience
+                doctorName: record.doctorname,
+                skilledField: record.skilledfield,
+                departmentName: record.departmentid,
+                practiceExperience: record.practiceexperience
             })
         })
     }
@@ -116,21 +113,20 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const param = {
-                    doctorName: values.doctorName,
-                    skilledField: values.skilledField,
-                    departmentName: values.departmentName,
-                    title: values.departmentName,
-                    practiceExperience: values.practiceExperience
+                    doctorname: values.doctorName,
+                    skilledfield: values.skilledField,
+                    departmentid: values.departmentName,
+                    practiceexperience: values.practiceExperience
                 }
                 if (this.state.modalFunction === "update") {
                     this.props.updateDoctor(param);
                 } else {
                     this.props.addDoctor(param);
                 }
+                this.setState({
+                    modalVisible: false
+                })
             }
-        })
-        this.setState({
-            modalVisible: false
         })
     }
 
@@ -141,49 +137,37 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
     }
 
     handleSearch = () => {
-        this.props.form.validateFields((err: any, values: any) => {
-            if (!err) {
-                const param = {
-                    doctorName: values.doctorName_S,
-                    departmentName: values.departmentName_S,
-                    title: values.title_S,
-                }
-                this.props.queryDoctor(param);
-            }
-        })
+        const values: any = this.props.form.getFieldsValue();
+        let param: any = {};
+        if (values.doctorName_S) {
+            param.doctorname = values.doctorName_S;
+        }
+        if (values.departmentName_S) {
+            param.departmentid = values.departmentName_S;
+        }
+        this.props.queryDoctor(param);
     }
 
     render() {
-        const {doctorList, form, departmentList, titleList} = this.props;
+        const {doctorList, form, departmentList, loading} = this.props;
         const {modalVisible} = this.state;
         const columns = [
             {
-                title: '头像',
-                dataIndex: 'head',
-                render: ((_: any, record: any) => (
-                    <img src={record.head}/>
-                ))
-            },
-            {
                 title: '姓名',
-                dataIndex: 'doctorName',
+                dataIndex: 'doctorname',
             },
             {
                 title: '擅长领域',
-                dataIndex: 'skilledField',
+                dataIndex: 'skilledfield',
+                render: (text: any) => (
+                    <Tooltip title="prompt text">
+                        <span className={style.text}>{text}</span>
+                    </Tooltip>
+                )
             },
             {
                 title: '所在科室',
-                dataIndex: 'departmentName'
-            },
-            {
-                title: '职称',
-                dataIndex: 'title',
-                filters: titleList
-            },
-            {
-                title: '执业经历',
-                dataIndex: 'practiceExperience'
+                dataIndex: 'departmentname'
             },
             {
                 title: '操作',
@@ -191,18 +175,18 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                 valueType: 'option',
                 render: (_: any, record: any) => (
                     <>
-                        <a onClick={() => this.handleUpdate}>
+                        <a onClick={() => this.handleUpdate(record)}>
                             修改
                         </a>
                         <Divider type="vertical"/>
                         <Popconfirm
                             title="确定删除这位医生？"
-                            onConfirm={() => this.props.deleteDoctor(record.doctorId)}
+                            onConfirm={() => this.props.deleteDoctor(record.doctorid)}
                             okText="确定"
                             cancelText="取消"
                         >
                             <a href="#">删除</a>
-                        </Popconfirm>,
+                        </Popconfirm>
                     </>
                 ),
             },
@@ -217,10 +201,10 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
         };
 
         return (
-            <div>
-                <Form style={{marginTop:20,marginBottom:20}}>
+            <Spin spinning={loading}>
+                <Form style={{marginTop: 20, marginBottom: 20}}>
                     <Row>
-                        <Col  span={6}>
+                        <Col span={6}>
                             <FormItem key="doctorName" {...formLayout} label="姓名">
                                 {form.getFieldDecorator('doctorName_S', {})(
                                     <Input/>
@@ -228,7 +212,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                             </FormItem>
                         </Col>
                         <Col span={6}>
-                            <FormItem key="departmentName" {...formLayout} label="所在科室">
+                            <FormItem key="departmentid" {...formLayout} label="所在科室">
                                 {form.getFieldDecorator('departmentName_S', {})(
                                     <Select
                                         style={{
@@ -237,28 +221,9 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                                     >
                                         {
                                             departmentList && departmentList.map((item: any) => (
-                                                <Option key={item.departmentId}
-                                                        value={item.departmentId}>{item.departmentName}</Option>
+                                                <Option key={item.departmentid}
+                                                        value={item.departmentid}>{item.name}</Option>
                                             ))
-                                        }
-                                    </Select>,
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={6}>
-                            <FormItem key="title" {...formLayout} label="职称">
-                                {form.getFieldDecorator('title_S', {})(
-                                    <Select
-                                        style={{
-                                            width: '100%',
-                                        }}
-                                    >
-
-                                        {
-                                            titleList.length > 0 && titleList.map((item: any) => {
-                                                <Option key={item.titleId}
-                                                        value={item.titleId}>{item.titleName}</Option>
-                                            })
                                         }
                                     </Select>,
                                 )}
@@ -269,14 +234,14 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                         </Col>
                     </Row>
                 </Form>
-                <Button onClick={() => this.handleCancelAddDoctor} style={{marginBottom:20}} type={"primary"}>添加医生</Button>
-                <Table dataSource={doctorList} columns={columns} pagination={"top"}/>;
+                <Button onClick={this.handleAddDoctor} style={{marginBottom: 20}} type={"primary"}>添加医生</Button>
+                <Table dataSource={doctorList} columns={columns}/>;
                 <Modal
                     destroyOnClose
                     title="医生管理"
                     visible={modalVisible}
-                    onOk={() => this.handleConfirmPost}
-                    onCancel={() => this.handleCancelPost}
+                    onOk={this.handleConfirmPost}
+                    onCancel={this.handleCancelPost}
                 >
                     <FormItem key="doctorName" {...formLayout} label="姓名">
                         {form.getFieldDecorator('doctorName', {
@@ -311,25 +276,9 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                             >
                                 {
                                     departmentList && departmentList.map((item: any) => (
-                                        <Option key={item.departmentId}
-                                                value={item.departmentId}>{item.departmentName}</Option>
+                                        <Option key={item.departmentid}
+                                                value={item.departmentid}>{item.name}</Option>
                                     ))
-                                }
-                            </Select>,
-                        )}
-                    </FormItem>,
-                    <FormItem key="title" {...formLayout} label="职称">
-                        {form.getFieldDecorator('title', {})(
-                            <Select
-                                style={{
-                                    width: '100%',
-                                }}
-                            >
-
-                                {
-                                    titleList.length > 0 && titleList.map((item: any) => {
-                                        <Option key={item.titleId} value={item.titleId}>{item.titleName}</Option>
-                                    })
                                 }
                             </Select>,
                         )}
@@ -340,8 +289,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                         )}
                     </FormItem>,
                 </Modal>
-            </div>
-
+            </Spin>
         );
     }
 }

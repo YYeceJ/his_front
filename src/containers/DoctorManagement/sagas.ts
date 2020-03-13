@@ -14,11 +14,12 @@ import {
     DELETE_DOCTOR,
     UPDATE_DOCTOR,
     ADD_DOCTOR,
-    QUERY_DEPARTMENT, QUERY_TITLE,
+    QUERY_DEPARTMENT
 } from './constants'
 
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
+import {utils} from "../../utils/utils";
 
 function* queryDoctorSaga(action: Action<any>) {
     try {
@@ -26,14 +27,14 @@ function* queryDoctorSaga(action: Action<any>) {
             method: 'GET',
             credentials: 'include',
             headers: {
-                'Authorization': window.authorization,
+                // 'Authorization': window.authorization,
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/doctor'
+            url: window.hempConfig.serverPath + '/doctor' + utils.getUrlParam(action.payload)
         };
-        const response = (yield call(autoRefreshTokenFetch, request)) as Response;
+        const response = (yield call(autoRefreshTokenFetch,request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(queryDoctorSuccess(json));
@@ -58,7 +59,7 @@ function* deleteDoctorSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/doctor'
+            url: window.hempConfig.serverPath + '/doctor/'+action.payload
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -85,6 +86,7 @@ function* updateDoctorSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
+            body:JSON.stringify(action.payload),
             url: window.hempConfig.serverPath + '/doctor'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
@@ -112,6 +114,7 @@ function* addDoctorSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
+            body:JSON.stringify(action.payload),
             url: window.hempConfig.serverPath + '/doctor'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
@@ -155,32 +158,6 @@ function* queryDepartmentSaga(action: Action<any>) {
     }
 }
 
-function* queryTitleSaga(action: Action<any>) {
-    try {
-        const request = {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Authorization': window.authorization,
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json',
-                'Cache-Control': ' no-cache'
-            },
-            url: window.hempConfig.serverPath + '/title'
-        };
-        const response = (yield call(autoRefreshTokenFetch, request)) as Response;
-        let json = yield response.json();
-        if (response.ok) {
-            yield put(queryDepartmentSuccess(json));
-        } else {
-            errorHandler(json);
-            yield put(queryDepartmentFailure(response.status));
-        }
-    } catch (error) {
-        errorHandler(error);
-        yield put(queryDepartmentFailure(error));
-    }
-}
 
 export default function* doctorDepartmentSagas() {
     yield takeEvery(QUERY_DOCTOR, queryDoctorSaga);
@@ -188,6 +165,5 @@ export default function* doctorDepartmentSagas() {
     yield takeEvery(UPDATE_DOCTOR, updateDoctorSaga);
     yield takeEvery(ADD_DOCTOR, addDoctorSaga);
     yield takeEvery(QUERY_DEPARTMENT, queryDepartmentSaga);
-    yield takeEvery(QUERY_TITLE, queryTitleSaga);
 }
 

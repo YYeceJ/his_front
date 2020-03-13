@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "*": ["types/*"] },
         "target": "esnext",
         "noImplicitAny": true,
         "removeComments": true,

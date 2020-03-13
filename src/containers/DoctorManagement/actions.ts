@@ -14,7 +14,7 @@ import {
     ADD_DOCTOR_FAILURE,
     QUERY_DEPARTMENT,
     QUERY_DEPARTMENT_SUCCESS,
-    QUERY_DEPARTMENT_FAILURE, QUERY_TITLE, QUERY_TITLE_SUCCESS, QUERY_TITLE_FAILURE,
+    QUERY_DEPARTMENT_FAILURE
 } from './constants'
 
 export const queryDoctor = createAction(QUERY_DOCTOR);
@@ -32,7 +32,3 @@ export const addDoctorFailure = createAction(ADD_DOCTOR_FAILURE);
 export const queryDepartment = createAction(QUERY_DEPARTMENT);
 export const queryDepartmentSuccess = createAction(QUERY_DEPARTMENT_SUCCESS);
 export const queryDepartmentFailure = createAction(QUERY_DEPARTMENT_FAILURE);
-
-export const queryTitle = createAction(QUERY_TITLE);
-export const queryTitleSuccess = createAction(QUERY_TITLE_SUCCESS);
-export const queryTitleFailure = createAction(QUERY_TITLE_FAILURE);

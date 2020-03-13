@@ -64,20 +64,32 @@ export class RootContainer extends React.Component<RootContainerStateProps & Roo
                         <Menu.Item key="home" >
                             <Link to="/"><Icon type="home" /><span className="nav-text">Home</span></Link>
                         </Menu.Item>
-                        <SubMenu key="sub1" title={<span><Icon type="user" /><span className="nav-text">User</span></span>} >
-                            <Menu.Item key="1"><Link to="/user/tom">Tom</Link></Menu.Item>
-                            <Menu.Item key="2"><Link to="/user/bill">Bill</Link></Menu.Item>
-                            <Menu.Item key="3"><Link to="/user/alex">Alex</Link></Menu.Item>
-                        </SubMenu>
-                        <SubMenu key="sub2" title={<span><Icon type="team" /><span className="nav-text">Team</span></span>} >
-                            <Menu.Item key="4"><Link to="/team/team1">Team 1</Link></Menu.Item>
-                            <Menu.Item key="5"><Link to="/team/team2">Team 2</Link></Menu.Item>
-                            <Menu.Item key="6"><Link to="/team/team3">Team 3</Link></Menu.Item>
-                            <Menu.Item key="7"><Link to="/team/team4">Team 4</Link></Menu.Item>
-                            <Menu.Item key="8"><Link to="/team/team5">Team 5</Link></Menu.Item>
-                        </SubMenu>
                         <Menu.Item key="doctorManagement">
                             <Link to="/doctorManagement"><span className="nav-text">医生管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="departmentManagement">
+                            <Link to="/departmentManagement"><span className="nav-text">科室管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="patientInfoManagement">
+                            <Link to="/patientInfoManagement"><span className="nav-text">患者信息管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="ConsultingRoomManagement">
+                            <Link to="/ConsultingRoomManagement"><span className="nav-text">诊室管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="SchedulingManagement">
+                            <Link to="/SchedulingManagement"><span className="nav-text">排班管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="DoctorSchedule">
+                            <Link to="/DoctorSchedule"><span className="nav-text">我的排班</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="PatientInfo">
+                            <Link to="/PatientInfo"><span className="nav-text">个人信息管理</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="VisitRecord">
+                            <Link to="/VisitRecord"><span className="nav-text">就诊记录</span></Link>
+                        </Menu.Item>
+                        <Menu.Item key="AppointVisit">
+                            <Link to="/AppointVisit"><span className="nav-text">预约就诊</span></Link>
                         </Menu.Item>
                     </Menu>
                 </Sider>
@@ -90,9 +102,6 @@ export class RootContainer extends React.Component<RootContainerStateProps & Roo
                         { React.createElement(Switch, null, [...routes, <Route key='ru_nomatch' component={NoMatch}/>]) }
 
                     </Content>
-                    <Footer style={{ textAlign: 'center' }}>
-                        Zhishinet Management Console Powered by Ant Design ©2017
-                    </Footer>
                 </Layout>
              </Layout>
         );

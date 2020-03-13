@@ -18,6 +18,3 @@ export const QUERY_DEPARTMENT = 'DoctorManagement/QUERY_DEPARTMENT';
 export const QUERY_DEPARTMENT_SUCCESS = 'DoctorManagement/QUERY_DEPARTMENT_SUCCESS';
 export const QUERY_DEPARTMENT_FAILURE = 'DoctorManagement/QUERY_DEPARTMENT_FAILURE';
 
-export const QUERY_TITLE = 'DoctorManagement/QUERY_TITLE';
-export const QUERY_TITLE_SUCCESS = 'DoctorManagement/QUERY_TITLE_SUCCESS';
-export const QUERY_TITLE_FAILURE = 'DoctorManagement/QUERY_TITLE_FAILURE';

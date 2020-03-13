@@ -1,0 +1,31 @@
+/**
+ * Created by you.li on 2019/12/10.
+ * 公共样式
+ */
+
+/** 公共色系*/
+$commonColor1: #4385F4;
+$commonColor2: #FCA91A;
+$correctCommonColor:#3FCD9C;
+$wrongCommonColor:#F05157;
+$maskCommonColor:rgba(0, 0, 0, 0.4);
+$defaultColor:#556675;
+$examColor:#0D1A26;
+$examFontSize:18px;
+
+/** 内容过长省略号*/
+@mixin ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/** 元素水平垂直居中*/
+@mixin positionCenter {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translate(-50%, -50%);
+}

@@ -11,6 +11,14 @@ import Team5 from './containers/Team5';
 
 import Bundle from './utils/Bundle';
 import {DoctorManagementForm} from "./containers/DoctorManagement";
+import {DepartmentManagementForm} from "./containers/DepartmentManagement";
+import {PatientInfoManagementForm} from "./containers/PatientInfoManagement";
+import {ConsultingRoomManagementForm} from "./containers/ConsultingRoomManagement";
+import {SchedulingManagementForm} from "./containers/SchedulingManagement";
+import {DoctorScheduleForm} from "./containers/DoctorSchedule";
+import {PatientInfoForm} from "./containers/PatientInfo";
+import {VisitRecordForm} from "./containers/VisitRecord";
+import {AppointVisitForm} from "./containers/AppointVisit";
 
 export default function createRoutes() {
     return [
@@ -66,5 +74,37 @@ export default function createRoutes() {
             path: "/doctorManagement",
             component: DoctorManagementForm
         },
+        {
+            path: "/departmentManagement",
+            component: DepartmentManagementForm
+        },
+        {
+            path: "/patientInfoManagement",
+            component: PatientInfoManagementForm
+        },
+        {
+            path: "/ConsultingRoomManagement",
+            component: ConsultingRoomManagementForm
+        },
+        {
+            path: "/SchedulingManagement",
+            component: SchedulingManagementForm
+        },
+        {
+            path: "/DoctorSchedule",
+            component: DoctorScheduleForm
+        },
+        {
+            path: "/PatientInfo",
+            component: PatientInfoForm
+        },
+        {
+            path: "/VisitRecord",
+            component: VisitRecordForm
+        },
+        {
+            path: "/AppointVisit",
+            component: AppointVisitForm
+        }
     ];
 }

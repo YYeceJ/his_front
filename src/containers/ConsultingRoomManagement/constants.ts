@@ -1,0 +1,19 @@
+export const QUERY_CONSULTING_ROOM = 'ConsultingRoomManagement/QUERY_CONSULTING_ROOM';
+export const QUERY_CONSULTING_ROOM_SUCCESS = 'ConsultingRoomManagement/QUERY_CONSULTING_ROOM_SUCCESS';
+export const QUERY_CONSULTING_ROOM_FAILURE = 'ConsultingRoomManagement/QUERY_CONSULTING_ROOM_FAILURE';
+
+export const DELETE_CONSULTING_ROOM = 'ConsultingRoomManagement/DELETE_CONSULTING_ROOM';
+export const DELETE_CONSULTING_ROOM_SUCCESS = 'ConsultingRoomManagement/DELETE_CONSULTING_ROOM_SUCCESS';
+export const DELETE_CONSULTING_ROOM_FAILURE = 'ConsultingRoomManagement/DELETE_CONSULTING_ROOM_FAILURE';
+
+export const UPDATE_CONSULTING_ROOM = 'ConsultingRoomManagement/UPDATE_CONSULTING_ROOM';
+export const UPDATE_CONSULTING_ROOM_SUCCESS = 'ConsultingRoomManagement/UPDATE_CONSULTING_ROOM_SUCCESS';
+export const UPDATE_CONSULTING_ROOM_FAILURE = 'ConsultingRoomManagement/UPDATE_CONSULTING_ROOM_FAILURE';
+
+export const ADD_CONSULTING_ROOM = 'ConsultingRoomManagement/ADD_CONSULTING_ROOM';
+export const ADD_CONSULTING_ROOM_SUCCESS = 'ConsultingRoomManagement/ADD_CONSULTING_ROOM_SUCCESS';
+export const ADD_CONSULTING_ROOM_FAILURE = 'ConsultingRoomManagement/ADD_CONSULTING_ROOM_FAILURE';
+
+export const QUERY_DEPARTMENT = 'ConsultingRoomManagement/QUERY_DEPARTMENT';
+export const QUERY_DEPARTMENT_SUCCESS = 'ConsultingRoomManagement/QUERY_DEPARTMENT_SUCCESS';
+export const QUERY_DEPARTMENT_FAILURE = 'ConsultingRoomManagement/QUERY_DEPARTMENT_FAILURE';

@@ -15,17 +15,14 @@ import {
     ADD_DOCTOR_FAILURE,
     QUERY_DEPARTMENT,
     QUERY_DEPARTMENT_SUCCESS,
-    QUERY_DEPARTMENT_FAILURE,
-    QUERY_TITLE,
-    QUERY_TITLE_SUCCESS,
-    QUERY_TITLE_FAILURE,
+    QUERY_DEPARTMENT_FAILURE
 } from './constants'
 
+const CONST_ARR:any = []
 const initialState: any = {
     loading: false,
     departmentList: [],
-    doctorList: [],
-    titleList:[]
+    doctorList: CONST_ARR
 };
 
 export const name = DOCTOR_MANAGEMENT_REDUCER;
@@ -33,7 +30,8 @@ export const name = DOCTOR_MANAGEMENT_REDUCER;
 export const doctorManagementReducer = handleActions({
     [QUERY_DOCTOR]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            loading: true
+            loading: true,
+            doctorList: CONST_ARR
         });
     },
     [QUERY_DOCTOR_SUCCESS]: (state, action: Action<any>) => {
@@ -44,7 +42,8 @@ export const doctorManagementReducer = handleActions({
     },
     [QUERY_DOCTOR_FAILURE]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            loading: false
+            loading: false,
+            doctorList: CONST_ARR
         });
     },
     [DELETE_DOCTOR]: (state, action: Action<any>) => {
@@ -93,7 +92,6 @@ export const doctorManagementReducer = handleActions({
         });
     },
     [QUERY_DEPARTMENT]: (state, action: Action<any>) => {
-        console.log("----param----", "reducer");
         return Object.assign({}, state, {
             loading: true
         });
@@ -101,28 +99,12 @@ export const doctorManagementReducer = handleActions({
     [QUERY_DEPARTMENT_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false,
-            departmentList: action.payload
+            departmentList: action.payload.data.records
         });
     },
     [QUERY_DEPARTMENT_FAILURE]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false
         });
-    },
-    [QUERY_TITLE]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: true
-        });
-    },
-    [QUERY_TITLE_SUCCESS]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false,
-            titleList: action.payload
-        });
-    },
-    [QUERY_TITLE_FAILURE]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false
-        });
-    },
+    }
 }, initialState);

@@ -1,5 +1,5 @@
 export class HEMPConfig {
-    serverPath = "https://crm-staging.zhishinet.com";
+    serverPath = "http://127.0.0.1:8080";
     crmPath = "https://crm-staging.zhishinet.com";
     basePath = "https://staging.zhishinet.com";
     homeworkBasePath = "https://staging.zhishinet.com/api/homework/v1";

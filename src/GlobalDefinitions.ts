@@ -30,8 +30,9 @@ declare global {
         userId: any,
         username: any,
         requestQueue: {path: string, options: any, resolve: any, reject: any}[],
-        tokenCookie: { access_token: string, refresh_token: string, token_type: string},
-        basePath: string
+        tokenCookie: { token: string},
+        basePath: string,
+        userData: any;// 用户信息
     }
 }
 
