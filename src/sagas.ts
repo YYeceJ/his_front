@@ -1,6 +1,4 @@
 import { all, fork } from 'redux-saga/effects';
-import saga from './containers/Team3/sagas';
-import team4Saga from './containers/Team4/sagas';
 import doctorDepartmentSagas from "./containers/DoctorManagement/sagas";
 import departmentDepartmentSagas from "./containers/DepartmentManagement/sagas";
 import patientInfoManagementSagas from "./containers/PatientInfoManagement/sagas";
@@ -9,10 +7,10 @@ import schedulingManagementSagas from "./containers/SchedulingManagement/sagas";
 import doctorScheduleSagas from "./containers/DoctorSchedule/sagas";
 import patientInfoSagas from "./containers/PatientInfo/sagas";
 import visitRecordSagas from "./containers/VisitRecord/sagas";
+import loginSagas from "./containers/Login/sagas";
 
 export default function* rootSaga() {
     yield all([
-        fork(saga),
         fork(doctorDepartmentSagas),
         fork(departmentDepartmentSagas),
         fork(patientInfoManagementSagas),
@@ -21,6 +19,7 @@ export default function* rootSaga() {
         fork(doctorScheduleSagas),
         fork(patientInfoSagas),
         fork(visitRecordSagas),
+        fork(loginSagas),
         // fork(team4Saga)
     ]);
 };

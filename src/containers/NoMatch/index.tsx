@@ -8,10 +8,6 @@ export interface NoMatchState { }
 
 export class NoMatch extends React.Component<NoMatchProps, NoMatchState> {
 
-    // componentDidMount() {
-    //     document.getElementById('content_display_area').style.height = ((document.getElementsByClassName('ant-layout-content')[0] as HTMLElement).offsetHeight - 42).toString() + "px";
-    // }
-
     render() {
         return (
             <div>

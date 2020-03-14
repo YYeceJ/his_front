@@ -12,7 +12,7 @@ import './styles/app.css';
 
 import createReducer from  './reducers';
 import { Hello } from './components/Hello/';
-import { RootContainer}  from './containers/RootContainer/';
+import { MainPage}  from './containers/MainPage/';
 import rootSaga from './sagas';
 import { HEMPConfig } from './config';
 
@@ -21,6 +21,7 @@ import "core-js/modules/es6.array.iterator";
 
 // import antd css
 import '!style-loader!css-loader!antd/dist/antd.min.css';
+import {RootContainer} from "./containers/RootContainer";
 
 // init hempConfig
 window.hempConfig = new HEMPConfig;
@@ -48,9 +49,7 @@ if(basepath !== undefined && basepath !== null && basepath.length == 3) {
     appBase = '/' + basepath[2] + appBase;
 }
 const history = createBrowserHistory({ basename: appBase});
-// const history = createBrowserHistory({ basename: '/www'});
 
-// Create react-router-redux middleware
 const reduxRouterMiddleware = routerMiddleware(history);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -61,7 +60,7 @@ const store = createStore(
 );
 window.store = store;
 sagaMiddleware.run(rootSaga);
-
+console.log("-app.tsx---store----", store);
 // init asyncReducers holder on window
 window.asyncReducers = {};
 
@@ -75,20 +74,4 @@ ReactDOM.render(
     </AppContainer>,
     document.getElementById("rootElement")
 );
-
-// ReactDOM.render(
-//         <RootLayout/>,
-//     document.getElementById("rootElement")
-// );
-
-// if (module.hot) {
-//     module.hot.accept('./components/RootLayout.tsx', () => {
-//         const NextRootContainer = require('./components/RootLayout').default;
-//         ReactDOM.render(
-//             <NextRootContainer/>,
-//             document.getElementById("rootElement")
-//         );
-//     });
-// }
-
 

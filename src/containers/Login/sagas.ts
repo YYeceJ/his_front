@@ -27,10 +27,8 @@ function* sendRequestData(action: Action<any>) {
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         if (response.ok) {
             const json = yield response.json();
-            // Store
-            localStorage.setItem("authorization", "Bearer " + json.access_token);
+            localStorage.setItem("authorization", "Bearer " + json.data);
             console.log("localstorage存储完成");
-            // 登陆成功后将新的token存入全局变量authorization中以完成auth认证
             window.authorization = localStorage.getItem("authorization");
             yield put(sendRequestDataSucceed(json));
             yield put(getUserInfo());
@@ -60,11 +58,10 @@ function* requestUserInfo() {
             url: `${window.hempConfig.serverPath}/doctor/profile`
         };
         const response = (yield call(autoRefreshTokenFetch, req)) as Response;
-
         const json = yield response.json();
         if (response.ok) {
             // 获取用户信息成功将数据保存至window
-            window.userData = json;
+            window.userData = json.data;
             yield put(getUserInfoSucceed(json));
         } else {
             yield put(getUserInfoError(json));

@@ -14,7 +14,9 @@ import {
     GET_USER_INFO_FAILED,
     UPDATE_REDUCER
 } from "./constants";
+import {LOGIN_REDUCER} from "../../constants";
 
+export const name = LOGIN_REDUCER;
 export const loginReducer = handleActions({
     [HTTP_SEND_FETCH_REQUESTED]: (state: any) => {
         return Object.assign({}, state, {
@@ -65,7 +67,7 @@ export const loginReducer = handleActions({
     },
     [GET_USER_INFO_SUCCEED]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            userData: action.payload,
+            userData: action.payload.data,
             isLoading: true
         });
     },
@@ -93,8 +95,6 @@ export const loginReducer = handleActions({
     }
 }, {
     requestMsg: "", // 报错信息
-    userData: null,// 学生数据
-    userAuthority: null,// 用户权限
+    userData: {},
     isLoading: false,
-    clientInfo: {} // 版本信息
 });

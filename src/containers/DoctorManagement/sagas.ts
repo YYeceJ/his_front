@@ -27,7 +27,7 @@ function* queryDoctorSaga(action: Action<any>) {
             method: 'GET',
             credentials: 'include',
             headers: {
-                // 'Authorization': window.authorization,
+                'Authorization': window.authorization,
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'

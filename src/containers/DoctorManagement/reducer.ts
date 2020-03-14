@@ -36,7 +36,7 @@ export const doctorManagementReducer = handleActions({
     },
     [QUERY_DOCTOR_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            doctorList: action.payload,
+            doctorList: action.payload.data.records,
             loading: false
         });
     },
