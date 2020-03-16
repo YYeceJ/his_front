@@ -80,7 +80,6 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
         }
         // 获取学生信息成功跳转至首页
         if (this.props.userData !== nextProps.userData && nextProps.userData) {
-            console.log("----param--2--", nextProps.userData);
             this.props.history.push("/MainPage");
         }
     }
@@ -128,8 +127,6 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
 
     render() {
         const {errorMsg, isDisable, loginName} = this.state;
-        console.log("----userData----", typeof this.props.userData);
-        console.log("----store----", window.store);
         return (
             <div className={style.page}>
                 <div className={style.loginBody}>

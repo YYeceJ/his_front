@@ -103,7 +103,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
             this.props.form.setFieldsValue({
                 doctorName: record.doctorname,
                 skilledField: record.skilledfield,
-                departmentName: record.departmentid,
+                departmentName: record.departmentid + "//" + record.departmentname,
                 practiceExperience: record.practiceexperience
             })
         })
@@ -113,13 +113,15 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const param = {
-                    doctorname: values.doctorName,
-                    skilledfield: values.skilledField,
-                    departmentid: values.departmentName,
-                    practiceexperience: values.practiceExperience
+                    doctorName: values.doctorName,
+                    skilledField: values.skilledField,
+                    departmentName: values.departmentName.split("//")[1],
+                    departmentId: parseInt(values.departmentName.split("//")[0]),
+                    practiceExperience: values.practiceExperience,
+                    doctorTitle: values.doctorTitle
                 }
                 if (this.state.modalFunction === "update") {
-                    this.props.updateDoctor(param);
+                    this.props.updateDoctor({doctorId:this.state.currentRecord.doctorid,...param});
                 } else {
                     this.props.addDoctor(param);
                 }
@@ -153,6 +155,10 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
         const {modalVisible} = this.state;
         const columns = [
             {
+                title: '账号',
+                dataIndex: 'account',
+            },
+            {
                 title: '姓名',
                 dataIndex: 'doctorname',
             },
@@ -160,7 +166,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                 title: '擅长领域',
                 dataIndex: 'skilledfield',
                 render: (text: any) => (
-                    <Tooltip title="prompt text">
+                    <Tooltip title={text}>
                         <span className={style.text}>{text}</span>
                     </Tooltip>
                 )
@@ -181,7 +187,9 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                         <Divider type="vertical"/>
                         <Popconfirm
                             title="确定删除这位医生？"
-                            onConfirm={() => this.props.deleteDoctor(record.doctorid)}
+                            onConfirm={() => this.props.deleteDoctor({
+                                "doctorId":record.doctorid
+                            })}
                             okText="确定"
                             cancelText="取消"
                         >
@@ -215,6 +223,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                             <FormItem key="departmentid" {...formLayout} label="所在科室">
                                 {form.getFieldDecorator('departmentName_S', {})(
                                     <Select
+                                        allowClear={true}
                                         style={{
                                             width: '100%',
                                         }}
@@ -277,7 +286,7 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                                 {
                                     departmentList && departmentList.map((item: any) => (
                                         <Option key={item.departmentid}
-                                                value={item.departmentid}>{item.name}</Option>
+                                                value={item.departmentid + "//" + item.name}>{item.name}</Option>
                                     ))
                                 }
                             </Select>,
@@ -287,7 +296,12 @@ class DoctorManagement extends React.Component<DoctorManagementStateProps & Doct
                         {form.getFieldDecorator('practiceExperience', {})(
                             <Input/>
                         )}
-                    </FormItem>,
+                    </FormItem>
+                    <FormItem key="doctorTitle" {...formLayout} label="职称">
+                        {form.getFieldDecorator('doctorTitle', {})(
+                            <Input/>
+                        )}
+                    </FormItem>
                 </Modal>
             </Spin>
         );

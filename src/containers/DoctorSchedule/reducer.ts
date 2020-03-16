@@ -4,15 +4,9 @@ import {
     QUERY_DOCTOR_SCHEDULE,
     QUERY_DOCTOR_SCHEDULE_SUCCESS,
     QUERY_DOCTOR_SCHEDULE_FAILURE,
-    START_VISIT,
-    START_VISIT_SUCCESS,
-    START_VISIT_FAILURE,
-    RECORD_MEDICAL,
-    RECORD_MEDICAL_SUCCESS,
-    RECORD_MEDICAL_FAILURE,
-    REGISTER_MEDICAL,
-    REGISTER_MEDICAL_SUCCESS,
-    REGISTER_MEDICAL_FAILURE,
+    UPDATE_SCHEDULING,
+    UPDATE_SCHEDULING_FAILURE,
+    UPDATE_SCHEDULING_SUCCESS
 } from './constants'
 
 const initialState: any = {
@@ -30,7 +24,7 @@ export const doctorScheduleReducer = handleActions({
     },
     [QUERY_DOCTOR_SCHEDULE_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            scheduleList: action.payload.data.records,
+            scheduleList: action.payload.data,
             loading: false
         });
     },
@@ -39,47 +33,17 @@ export const doctorScheduleReducer = handleActions({
             loading: false
         });
     },
-    [START_VISIT]: (state, action: Action<any>) => {
+    [UPDATE_SCHEDULING]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: true
         });
     },
-    [START_VISIT_SUCCESS]: (state, action: Action<any>) => {
+    [UPDATE_SCHEDULING_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false
         });
     },
-    [START_VISIT_FAILURE]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false
-        });
-    },
-    [RECORD_MEDICAL]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: true
-        });
-    },
-    [RECORD_MEDICAL_SUCCESS]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false
-        });
-    },
-    [RECORD_MEDICAL_FAILURE]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false
-        });
-    },
-    [REGISTER_MEDICAL]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: true
-        });
-    },
-    [REGISTER_MEDICAL_SUCCESS]: (state, action: Action<any>) => {
-        return Object.assign({}, state, {
-            loading: false
-        });
-    },
-    [REGISTER_MEDICAL_FAILURE]: (state, action: Action<any>) => {
+    [UPDATE_SCHEDULING_FAILURE]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false
         });

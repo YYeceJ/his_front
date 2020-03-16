@@ -2,7 +2,7 @@ import {all, call, put, takeEvery, takeLatest} from 'redux-saga/effects';
 import {Action} from 'redux-actions';
 
 import {
-    queryDoctorSuccess, queryDoctorFailure,
+    queryDoctorSuccess, queryDoctorFailure,queryDoctor,
     deleteDoctorSuccess, deleteDoctorFailure,
     updateDoctorSuccess, updateDoctorFailure,
     addDoctorSuccess, addDoctorFailure,
@@ -51,7 +51,7 @@ function* queryDoctorSaga(action: Action<any>) {
 function* deleteDoctorSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'DELETE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -59,12 +59,14 @@ function* deleteDoctorSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/doctor/'+action.payload
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/doctor/delete'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(deleteDoctorSuccess(json));
+            yield put(queryDoctor());
         } else {
             errorHandler(json);
             yield put(deleteDoctorFailure(response.status));
@@ -78,7 +80,7 @@ function* deleteDoctorSaga(action: Action<any>) {
 function* updateDoctorSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'UPDATE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -87,12 +89,13 @@ function* updateDoctorSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body:JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + '/doctor'
+            url: window.hempConfig.serverPath + '/doctor/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(updateDoctorSuccess(json));
+            yield put(queryDoctor());
         } else {
             errorHandler(json);
             yield put(updateDoctorFailure(response.status));
@@ -115,12 +118,13 @@ function* addDoctorSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body:JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + '/doctor'
+            url: window.hempConfig.serverPath + '/doctor/save'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(addDoctorSuccess(json));
+            yield put(queryDoctor());
         } else {
             errorHandler(json);
             yield put(addDoctorFailure(response.status));

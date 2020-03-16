@@ -60,8 +60,7 @@ function* requestUserInfo() {
         const response = (yield call(autoRefreshTokenFetch, req)) as Response;
         const json = yield response.json();
         if (response.ok) {
-            // 获取用户信息成功将数据保存至window
-            window.userData = json.data;
+            yield localStorage.setItem("userData", JSON.stringify(json.data));
             yield put(getUserInfoSucceed(json));
         } else {
             yield put(getUserInfoError(json));

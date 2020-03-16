@@ -28,8 +28,6 @@ import moment from 'moment';
 const FormItem = Form.Item;
 const {Option} = Select;
 
-const format = 'HH:mm';
-
 interface SchedulingManagementOwnProps extends RouteComponentProps<any>, FormComponentProps {
 }
 
@@ -54,6 +52,7 @@ interface SchedulingManagementDispatchProps {
 interface SchedulingManagementState {
     modalVisible?: boolean;
     modalFunction?: string;
+    currentRecord?: any;
 }
 
 @(connect(
@@ -98,7 +97,9 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
         super(props);
         this.state = {
             modalVisible: false,
-            modalFunction: ""
+            modalFunction: "",
+            currentRecord: {}
+
         }
     }
 
@@ -107,6 +108,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
         this.props.queryScheduling();
         this.props.queryDoctor();
         this.props.queryConsultingRoom();
+        console.log("----userData----", localStorage.getItem("userData"));
     }
 
     handleAdd = () => {
@@ -119,11 +121,12 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
     handleUpdate = (record: any) => {
         this.setState({
             modalVisible: true,
-            modalFunction: "update"
+            modalFunction: "update",
+            currentRecord: record
         }, () => {
             this.props.form.setFieldsValue({
-                doctorId_A: record.doctorname,
-                roomId_A: record.roomname,
+                doctorId_A: record.doctorid + "//" + record.doctorname,
+                roomId_A: record.roomid + "//" + record.roomname,
                 cost: record.cost,
                 date_A: moment(record.date),
                 startTime_A: moment(record.starttime, 'HH:mm'),
@@ -133,22 +136,28 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
     }
 
     handleConfirmPost = () => {
+        const userData = JSON.parse(localStorage.getItem("userData"));
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const param = {
-                    doctorid: parseInt(values.doctorId_A.split("//")[0]),
-                    doctorname: values.doctorId_A.split("//")[1],
-                    roomid: parseInt(values.roomId_A.split("//")[0]),
-                    roomname: values.roomId_A.split("//")[1],
+                    departmentId: userData.departmentid,
+                    departmentName: userData.departmentname,
+                    doctorId: parseInt(values.doctorId_A.split("//")[0]),
+                    doctorName: values.doctorId_A.split("//")[1],
+                    roomId: parseInt(values.roomId_A.split("//")[0]),
+                    roomName: values.roomId_A.split("//")[1],
                     cost: values.cost,
-                    date:moment(values.date_A).format('YYYY-MM-DD'),
-                    starttime:moment(values.startTime_A).format('HH:mm'),
-                    endtime:moment(values.endTime_A).format('HH:mm'),
+                    date: moment(values.date_A).format('YYYY-MM-DD'),
+                    startTime: moment(values.startTime_A).format('HH:mm:ss'),
+                    endTime: moment(values.endTime_A).format('HH:mm:ss'),
                 }
                 if (this.state.modalFunction === "update") {
-                    this.props.updateScheduling(param);
+                    this.props.updateScheduling({schedulingId: this.state.currentRecord.schedulingid, ...param});
                 } else {
-                    this.props.addScheduling(param);
+                    this.props.addScheduling({
+                        creatorId: userData.doctorid,
+                        creatorName: userData.doctorname, ...param
+                    });
                 }
                 this.setState({
                     modalVisible: false
@@ -164,16 +173,16 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
     }
 
     handleSearch = () => {
-        const values:any = this.props.form.getFieldsValue();
-        const param:any = {}
-        if(values.doctorId_S){
+        const values: any = this.props.form.getFieldsValue();
+        const param: any = {}
+        if (values.doctorId_S) {
             param.doctorid = values.doctorId_S;
         }
-        if(values.consultingRoomId_S){
+        if (values.consultingRoomId_S) {
             param.roomid = values.consultingRoomId_S;
         }
-        if(values.date_S){
-            param.date = moment(values.date_S).format('YYYY-MM-DD');
+        if (values.date_S) {
+            param.date = moment(values.date_S).format('YYYY-MM-DD').slice(0,11);
         }
         this.props.queryScheduling(param);
     }
@@ -197,7 +206,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
             {
                 title: '日期',
                 dataIndex: 'date',
-                render:(text:any) => (moment(text).format('YYYY-MM-DD'))
+                render: (text: any) => (moment(text).format('YYYY-MM-DD'))
             },
             {
                 title: '开始时间',
@@ -233,22 +242,28 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                 title: '操作',
                 dataIndex: 'option',
                 valueType: 'option',
-                render: (_: any, record: any) => (
-                    <>
-                        <a onClick={() => this.handleUpdate(record)}>
-                            修改
-                        </a>
-                        <Divider type="vertical"/>
-                        <Popconfirm
-                            title="确定删除排班？"
-                            onConfirm={() => this.props.deleteScheduling(record.schedulingId)}
-                            okText="确定"
-                            cancelText="取消"
-                        >
-                            <a href="#">删除</a>
-                        </Popconfirm>
-                    </>
-                ),
+                render: (_: any, record: any) => {
+                    if (record.status === 0) {
+                        return (
+                            <>
+                                <a onClick={() => this.handleUpdate(record)}>
+                                    修改
+                                </a>
+                                <Divider type="vertical"/>
+                                <Popconfirm
+                                    title="确定删除排班？"
+                                    onConfirm={() => this.props.deleteScheduling({schedulingId: record.schedulingId})}
+                                    okText="确定"
+                                    cancelText="取消"
+                                >
+                                    <a href="#">删除</a>
+                                </Popconfirm>
+                            </>
+                        )
+                    } else {
+                        return <span>--</span>
+                    }
+                },
             },
         ];
         const formLayout = {
@@ -325,12 +340,13 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                 >
                     <FormItem key="doctorId_A" {...formLayout} label="医生">
                         {form.getFieldDecorator('doctorId_A', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请选择医生"
+                                    required: true,
+                                    message: "请选择医生"
                                 }
-                            ]})(
+                            ]
+                        })(
                             <Select
                                 style={{
                                     width: '100%',
@@ -347,10 +363,10 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                     </FormItem>
                     <FormItem key="roomId_A" {...formLayout} label="诊室">
                         {form.getFieldDecorator('roomId_A', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请选择诊室"
+                                    required: true,
+                                    message: "请选择诊室"
                                 }
                             ]
                         })(
@@ -370,27 +386,27 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                     </FormItem>
                     <FormItem key="cost" {...formLayout} label="挂号费">
                         {form.getFieldDecorator('cost', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请输入挂号费"
+                                    required: true,
+                                    message: "请输入挂号费"
                                 },
                             ],
-                            initialValue:0
+                            initialValue: 0
                         })(
                             <InputNumber
                                 min={0}
-                                formatter={(value:any) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={(value:any) => value.replace(/\$\s?|(,*)/g, '')}
+                                formatter={(value: any) => `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
                             />
                         )}
                     </FormItem>
                     <FormItem key="date_A" {...formLayout} label="日期">
                         {form.getFieldDecorator('date_A', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请选择日期"
+                                    required: true,
+                                    message: "请选择日期"
                                 }
                             ]
                         })(
@@ -399,26 +415,26 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                     </FormItem>
                     <FormItem key="startTime_A" {...formLayout} label="开始时间">
                         {form.getFieldDecorator('startTime_A', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请选择开始时间"
+                                    required: true,
+                                    message: "请选择开始时间"
                                 }
                             ]
                         })(
-                            <TimePicker  placeholder={"请选择开始时间"} format={format}/>
+                            <TimePicker placeholder={"请选择开始时间"}/>
                         )}
                     </FormItem>
                     <FormItem key="endTime_A" {...formLayout} label="结束时间">
                         {form.getFieldDecorator('endTime_A', {
-                            rules:[
+                            rules: [
                                 {
-                                    required:true,
-                                    message:"请选择诊室结束时间"
+                                    required: true,
+                                    message: "请选择诊室结束时间"
                                 }
                             ]
                         })(
-                            <TimePicker placeholder={"请选择结束时间"} format={format}/>
+                            <TimePicker placeholder={"请选择结束时间"}/>
                         )}
                     </FormItem>
                 </Modal>

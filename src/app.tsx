@@ -60,7 +60,6 @@ const store = createStore(
 );
 window.store = store;
 sagaMiddleware.run(rootSaga);
-console.log("-app.tsx---store----", store);
 // init asyncReducers holder on window
 window.asyncReducers = {};
 

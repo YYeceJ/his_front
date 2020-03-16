@@ -12,14 +12,15 @@ import {
     Row, Spin, DatePicker
 } from 'antd';
 import {connect} from 'react-redux';
-import {queryDoctorSchedule, startVisit, recordMedical, registerMedical} from './actions';
+import {queryDoctorSchedule, updateScheduling} from './actions';
 import {RouteComponentProps} from 'react-router-dom';
 import {FormComponentProps} from "antd/lib/form";
 import moment from "moment";
+import {UTIL, utils} from "../../utils/utils";
 
 const FormItem = Form.Item;
 const {Option} = Select;
-const { TextArea } = Input;
+const {TextArea} = Input;
 
 interface DoctorScheduleOwnProps extends RouteComponentProps<any>, FormComponentProps {
 }
@@ -31,14 +32,13 @@ interface DoctorScheduleStateProps {
 
 interface DoctorScheduleDispatchProps {
     queryDoctorSchedule?: Function,
-    startVisit?: Function,
-    recordMedical?: Function,
-    registerMedical?: Function,
+    updateScheduling?: Function,
 }
 
 interface DoctorScheduleState {
-    modalVisible?:boolean;
-    currentScheduleId?:number;
+    modalVisible?: boolean;
+    currentScheduleId?: number;
+    registerMedicalModalVisible?: boolean;
 }
 
 @(connect(
@@ -53,61 +53,99 @@ interface DoctorScheduleState {
             queryDoctorSchedule: (param: any) => {
                 dispatch(queryDoctorSchedule(param));
             },
-            startVisit: (param: any) => {
-                dispatch(startVisit(param));
-            },
-            recordMedical: (param: any) => {
-                dispatch(recordMedical(param));
-            },
-            registerMedical: (param: any) => {
-                dispatch(registerMedical(param));
+            updateScheduling: (param: any) => {
+                dispatch(updateScheduling(param));
             },
         }
     )
 ) as any)
 class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorScheduleDispatchProps & DoctorScheduleOwnProps, DoctorScheduleState> {
+    private userData = JSON.parse(localStorage.getItem("userData"));
 
     constructor(props: DoctorScheduleStateProps & DoctorScheduleDispatchProps & DoctorScheduleOwnProps) {
         super(props);
         this.state = {
-            modalVisible:false,
-            currentScheduleId:0,
+            modalVisible: false,
+            currentScheduleId: 0,
+            registerMedicalModalVisible: false,
         }
     }
 
     componentDidMount() {
-        // TODO doctorid
-        this.props.queryDoctorSchedule({doctorid:1});
+        this.props.queryDoctorSchedule({doctorid: this.userData.doctorid});
     }
 
     handleSearch = () => {
-        const values:any = this.props.form.getFieldsValue();
-        const param:any = {}
-        if(values.date_S){
-            param.date = moment(values.date_S).format('YYYY-MM-DD');
+        const values: any = this.props.form.getFieldsValue();
+        let param: any = {};
+        if (values.date) {
+            param.date = utils.formatDateTime(values.date);
         }
-        this.props.queryDoctorSchedule({doctorid:1},...param);
+        console.log("----param----" + param);
+        this.props.queryDoctorSchedule({
+            doctorid: this.userData.doctorid,
+            ...param
+        });
     }
 
     handleConfirmPost = () => {
-        this.props.form.validateFields((err:any,values:any) => {
-            if(!err){
-                console.log("----values----", values);
-                this.props.recordMedical(values);
+        this.props.form.validateFields((err: any, values: any) => {
+            if (!err) {
+                this.props.updateScheduling({
+                    ...values,
+                    schedulingId: this.state.currentScheduleId,
+                    status: 3
+                });
+                this.setState({
+                    modalVisible: false
+                })
             }
         })
     }
 
     handleCancelPost = () => {
         this.setState({
-            modalVisible:false
+            modalVisible: false
         })
     }
 
-    handleRecordMedical = (id:number) => {
+    handleRecordMedical = (id: number) => {
         this.setState({
-            modalVisible:true,
-            currentScheduleId:id
+            modalVisible: true,
+            currentScheduleId: id
+        })
+    }
+
+    registerMedical = (id: number) => {
+        this.setState({
+            registerMedicalModalVisible:true,
+            currentScheduleId: id
+        })
+    }
+
+    handleConfirmRegisterMedical = () => {
+        const values = this.props.form.getFieldsValue();
+        this.props.updateScheduling({
+            schedulingId: this.state.currentScheduleId,
+            status: 1,
+            patientPhone:values.patientPhone,
+            patientName:values.patientName
+        })
+        this.setState({
+            registerMedicalModalVisible:false
+        })
+    }
+
+    handleCancelRegisterMedical = () => {
+        this.setState({
+            registerMedicalModalVisible:false
+        })
+    }
+
+    startVisit = (id: number) => {
+        this.props.updateScheduling({
+            schedulingId: id,
+            status: 2
         })
     }
 
@@ -125,7 +163,7 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
             {
                 title: '日期',
                 dataIndex: 'date',
-                render:(text:any) => (moment(text).format('YYYY-MM-DD'))
+                render: (text: any) => (moment(text).format('YYYY-MM-DD'))
             },
             {
                 title: '开始时间',
@@ -165,13 +203,13 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
                     let status: any;
                     switch (record.status) {
                         case 0:
-                            status = <a onClick={() => this.props.registerMedical(record.schedulingId)}>现场挂号</a>;
+                            status = <a onClick={() => this.registerMedical(record.schedulingid)}>现场挂号</a>;
                             break;
                         case 1:
-                            status = <a onClick={() => this.props.startVisit(record.schedulingId)}>叫号</a>;
+                            status = <a onClick={() => this.startVisit(record.schedulingid)}>叫号</a>;
                             break;
                         case 2:
-                            status = <a onClick={() => this.handleRecordMedical(record.schedulingId)}>录入电子病历</a>;
+                            status = <a onClick={() => this.handleRecordMedical(record.schedulingid)}>录入电子病历</a>;
                             break;
                         case 3:
                             status = <span>-</span>;
@@ -217,38 +255,51 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
                 >
                     <FormItem key="chiefComplaint" {...formLayout} label="病人主诉">
                         {form.getFieldDecorator('chiefComplaint', {})(
-                            <TextArea autoSize={{ minRows: 3, maxRows: 5 }}/>
+                            <TextArea autoSize={{minRows: 3, maxRows: 5}}/>
                         )}
                     </FormItem>
                     <FormItem key="examinationResult" {...formLayout} label="检查结果">
                         {form.getFieldDecorator('examinationResult', {})(
-                            <TextArea autoSize={{ minRows: 3, maxRows: 5 }}/>
+                            <TextArea autoSize={{minRows: 3, maxRows: 5}}/>
                         )}
                     </FormItem>
                     <FormItem key="diagnosticResult" {...formLayout} label="诊断结果">
                         {form.getFieldDecorator('diagnosticResult', {
-                            rules:[{
+                            rules: [{
                                 required: true,
                                 message: '请输入诊断结果！'
                             }]
                         })(
-                            <TextArea autoSize={{ minRows: 3, maxRows: 5 }}/>
+                            <TextArea autoSize={{minRows: 3, maxRows: 5}}/>
                         )}
                     </FormItem>
                     <FormItem key="doctorOpinion" {...formLayout} label="医生建议">
                         {form.getFieldDecorator('doctorOpinion', {
-                            rules:[{
+                            rules: [{
                                 required: true,
                                 message: '请输入医生建议！'
                             }]
                         })(
-                            <TextArea autoSize={{ minRows: 3, maxRows: 5 }}/>
+                            <TextArea autoSize={{minRows: 3, maxRows: 5}}/>
                         )}
                     </FormItem>
-                    <FormItem key="note" {...formLayout} label="备注">
-                        {form.getFieldDecorator('note', {})(
-                            <TextArea autoSize={{ minRows: 3, maxRows: 5 }}/>
+                </Modal>
+                <Modal
+                    destroyOnClose
+                    title="现场挂号"
+                    visible={this.state.registerMedicalModalVisible}
+                    onOk={this.handleConfirmRegisterMedical}
+                    onCancel={this.handleCancelRegisterMedical}
+                >
+                    <FormItem key="patientPhone" {...formLayout} label="手机号">
+                        {form.getFieldDecorator('patientPhone', {})(
+                            <Input/>
                         )}
+                    </FormItem>
+                    <FormItem key="patientName" {...formLayout} label="姓名">
+                        {form.getFieldDecorator('patientName', {})(
+                            <Input/>
+                            )}
                     </FormItem>
                 </Modal>
             </Spin>

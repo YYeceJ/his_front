@@ -37,7 +37,7 @@ interface DepartmentManagementDispatchProps {
 interface DepartmentManagementState {
     modalVisible?: boolean;
     modalFunction?: string;
-    selectRecord?:any
+    currentRecord?: any;
 }
 
 @(connect(
@@ -73,7 +73,7 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
         this.state = {
             modalVisible: false,
             modalFunction: "",
-            selectRecord:{}
+            currentRecord: {},
         }
     }
 
@@ -89,12 +89,14 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
     }
 
     handleUpdate = (record: any) => {
+        console.log("----handleUpdate----");
         this.setState({
             modalVisible: true,
-            modalFunction: "update"
+            modalFunction: "update",
+            currentRecord: record
         }, () => {
             this.props.form.setFieldsValue({
-                departmentName: record.departmentName,
+                departmentName: record.name,
                 introduction: record.introduction
             })
         })
@@ -104,14 +106,12 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const param = {
-                    doctorName: values.doctorName,
-                    skilledField: values.skilledField,
-                    departmentName: values.departmentName,
-                    title: values.departmentName,
-                    practiceExperience: values.practiceExperience
+                    name: values.departmentName,
+                    introduction: values.introduction
                 }
                 if (this.state.modalFunction === "update") {
-                    this.props.updateDepartment(param);
+                    console.log("----currentRecord----", this.state.currentRecord);
+                    this.props.updateDepartment({departmentId:this.state.currentRecord.departmentid,...param});
                 } else {
                     this.props.addDepartment(param);
                 }
@@ -130,8 +130,10 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
     }
 
     handleSearch = () => {
-        const param = {
-            name: this.props.form.getFieldsValue().departmentName_S,
+        const values: any = this.props.form.getFieldsValue();
+        let param: any = {};
+        if (values.doctorName_S) {
+            param.name = values.departmentName_S;
         }
         this.props.queryDepartment(param);
     }
@@ -154,13 +156,15 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
                 valueType: 'option',
                 render: (_: any, record: any) => (
                     <>
-                        <a onClick={this.handleUpdate}>
+                        <a onClick={() => this.handleUpdate(record)}>
                             修改
                         </a>
                         <Divider type="vertical"/>
                         <Popconfirm
                             title="确定删除科室？"
-                            onConfirm={() => this.props.deleteDepartment(record.departmentId)}
+                            onConfirm={() => this.props.deleteDepartment({
+                                departmentId:record.departmentid
+                            })}
                             okText="确定"
                             cancelText="取消"
                         >

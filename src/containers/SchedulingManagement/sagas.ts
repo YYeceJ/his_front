@@ -53,7 +53,7 @@ function* querySchedulingSaga(action: Action<any>) {
 function* deleteSchedulingSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'DELETE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -61,7 +61,8 @@ function* deleteSchedulingSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/scheduling'
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/scheduling/delete'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -80,7 +81,7 @@ function* deleteSchedulingSaga(action: Action<any>) {
 function* updateSchedulingSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'UPDATE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -88,7 +89,8 @@ function* updateSchedulingSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/scheduling'
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/scheduling/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -116,7 +118,7 @@ function* addSchedulingSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body:JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + '/scheduling'
+            url: window.hempConfig.serverPath + '/scheduling/save'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();

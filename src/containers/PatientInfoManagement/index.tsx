@@ -53,8 +53,7 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
 
     constructor(props: PatientInfoManagementStateProps & PatientInfoManagementDispatchProps & PatientInfoManagementOwnProps) {
         super(props);
-        this.state = {
-        }
+        this.state = {}
     }
 
     componentDidMount() {
@@ -62,9 +61,13 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
     }
 
     handleSearch = () => {
-        const param = this.props.form.getFieldsValue();
+        const values: any = this.props.form.getFieldsValue();
+        let param: any = {};
+        if (values.patientName) {
+            param.patientname = values.patientName;
+        }
         this.props.queryPatientInfo({
-            patientname:param.patientName || ""
+            patientname: param.patientname
         });
     }
 
@@ -104,9 +107,9 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
 
         return (
             <Spin spinning={loading}>
-                <Form style={{marginTop:20,marginBottom:20}}>
+                <Form style={{marginTop: 20, marginBottom: 20}}>
                     <Row>
-                        <Col  span={6}>
+                        <Col span={6}>
                             <FormItem key="patientName" {...formLayout} label="患者姓名">
                                 {form.getFieldDecorator('patientName', {})(
                                     <Input/>
@@ -118,7 +121,7 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
                         </Col>
                     </Row>
                 </Form>
-                <Table dataSource={patientInfoList} columns={columns} />;
+                <Table dataSource={patientInfoList} columns={columns}/>;
             </Spin>
 
         );

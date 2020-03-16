@@ -38,7 +38,7 @@ export const schedulingManagementReducer = handleActions({
     },
     [QUERY_SCHEDULING_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            schedulingList: action.payload.data.records,
+            schedulingList: action.payload.data,
             loading: false
         });
     },
@@ -115,7 +115,7 @@ export const schedulingManagementReducer = handleActions({
     },
     [QUERY_DOCTOR_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            doctorList: action.payload,
+            doctorList: action.payload.data.records,
             loading: false
         });
     },

@@ -22,7 +22,7 @@ import {utils} from "../../utils/utils";
 function* deleteDepartmentSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'DELETE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -30,7 +30,8 @@ function* deleteDepartmentSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/department'
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/department/delete'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -49,7 +50,7 @@ function* deleteDepartmentSaga(action: Action<any>) {
 function* updateDepartmentSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'UPDATE',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -57,7 +58,8 @@ function* updateDepartmentSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/department'
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/department/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -84,7 +86,8 @@ function* addDepartmentSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/department'
+            body:JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/department/save'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();

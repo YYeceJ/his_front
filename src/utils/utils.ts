@@ -34,15 +34,15 @@ export const utils = {
         for (let item in param) {
             if (on) {
                 on = false;
-                if(param[item]){
+                if (param[item]) {
                     result = "?" + item + "=" + param[item];
-                }else {
+                } else {
                     result = "?";
                 }
             } else {
-                if(param[item]){
+                if (param[item]) {
                     result = result + "&" + item + "=" + param[item];
-                }else {
+                } else {
                     result = result;
                 }
             }
@@ -57,7 +57,7 @@ export const utils = {
      * @returns {string}
      */
     getViewString(str: string, length: number) {
-        if(str != null && length != null) {
+        if (str != null && length != null) {
             return str.length <= length ? str : str.substring(0, length) + ' ...';
         }
     },
@@ -99,7 +99,7 @@ export const utils = {
      * @param h5url
      * @returns {boolean}
      */
-    h5UrlCheck:(h5Url: any)=> {
+    h5UrlCheck: (h5Url: any) => {
         var h5UrlReg = /^([hH][tT]{2}[pP][sS]:\/\/)/;
         var check = h5UrlReg.test(h5Url);
         return check;
@@ -109,7 +109,7 @@ export const utils = {
     },
     //生成uuid
     uuid: () => {
-        let s:any = [];
+        let s: any = [];
         let hexDigits = "0123456789abcdef";
         for (let i = 0; i < 36; i++) {
             s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
@@ -117,10 +117,22 @@ export const utils = {
         s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
         s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
         s[8] = s[13] = s[18] = s[23] = "-";
-    
+
         let uuid = s.join("");
         return uuid;
+    },
+
+    formatDateTime: (inputTime: any) => {
+        let date = new Date(inputTime);
+        let y = date.getFullYear();
+        let m: string | number = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        let d: string | number = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+
+        return y + '-' + m + '-' + d;
     }
+
 }
 
 export function request(options: {
@@ -160,8 +172,8 @@ export function request(options: {
             'Cache-Control': ' no-cache',
             ...headers,
         },
-        url: url + (query ? (  '?' + querystring.stringify(query)) : ''),
-        body: body ? ( processData ? JSON.stringify(body) : body) : undefined
+        url: url + (query ? ('?' + querystring.stringify(query)) : ''),
+        body: body ? (processData ? JSON.stringify(body) : body) : undefined
     }
 
 
@@ -240,7 +252,7 @@ export function request(options: {
                         success: true,
                         message: statusText,
                         statusCode: status,
-                        length:data.length,
+                        length: data.length,
                         ...data,
                     }
                 })
@@ -257,13 +269,13 @@ export function request(options: {
                 statusCode = 600
                 msg = error.message || 'Network Error'
             }
-            return Promise.reject({success: false, statusCode, message: msg,...error})
+            return Promise.reject({success: false, statusCode, message: msg, ...error})
         })
     });
 
 }
 
-export module UTIL{
+export module UTIL {
     export function clone(myObj: any): any {
         if (myObj == null) return myObj;
         if (myObj.constructor === Array) {
@@ -283,14 +295,13 @@ export module UTIL{
 }
 
 
-
 // 跳转路由
-export const routerPush = ({pathname, query,isReplace}: { pathname: any, query?: any,isReplace?:any }) => {
+export const routerPush = ({pathname, query, isReplace}: { pathname: any, query?: any, isReplace?: any }) => {
     let appHistory: any = (window as any).appHistory;
-    if(isReplace){
-        appHistory.replace(pathname + (query ? ( '?' + querystring.stringify(query)) : ''))
-    }else{
-        appHistory.push(pathname + (query ? ( '?' + querystring.stringify(query)) : ''))
+    if (isReplace) {
+        appHistory.replace(pathname + (query ? ('?' + querystring.stringify(query)) : ''))
+    } else {
+        appHistory.push(pathname + (query ? ('?' + querystring.stringify(query)) : ''))
 
     }
 }
