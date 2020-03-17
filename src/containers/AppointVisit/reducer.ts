@@ -8,12 +8,16 @@ import {
     APPOINT_VISIT_SUCCESS,
     APPOINT_VISIT_FAILURE,
     QUERY_DEPARTMENT, QUERY_DEPARTMENT_FAILURE, QUERY_DEPARTMENT_SUCCESS,
+    QUERY_PATIENT_RECORD,
+    QUERY_PATIENT_RECORD_FAILURE,
+    QUERY_PATIENT_RECORD_SUCCESS
 } from './constants'
 
 const initialState: any = {
     loading: false,
     scheduleList: [],
-    departmentList:[],
+    departmentList: [],
+    patientRecord:[]
 };
 
 export const name = APPOINT_VISIT_REDUCER;
@@ -26,7 +30,7 @@ export const appointVisitReducer = handleActions({
     },
     [QUERY_SCHEDULE_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            scheduleList: action.payload,
+            scheduleList: action.payload.data,
             loading: false
         });
     },
@@ -58,12 +62,28 @@ export const appointVisitReducer = handleActions({
     [QUERY_DEPARTMENT_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false,
-            departmentList: action.payload
+            departmentList: action.payload.data.records
         });
     },
     [QUERY_DEPARTMENT_FAILURE]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false
         });
-    }
+    },
+    [QUERY_PATIENT_RECORD]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            loading: true
+        });
+    },
+    [QUERY_PATIENT_RECORD_SUCCESS]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            patientRecord:action.payload.data,
+            loading: false
+        });
+    },
+    [QUERY_PATIENT_RECORD_FAILURE]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            loading: false
+        });
+    },
 }, initialState);

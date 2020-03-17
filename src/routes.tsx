@@ -10,6 +10,7 @@ import {VisitRecordForm} from "./containers/VisitRecord";
 import {AppointVisitForm} from "./containers/AppointVisit";
 import Login from "./containers/Login";
 import {MainPage} from "./containers/MainPage";
+import {Entrance} from "./containers/Entrance";
 
 export default function createRoutes() {
     return [
@@ -66,6 +67,11 @@ export default function createRoutes() {
         {
             path: "/MainPage",
             component: MainPage,
+            exact: true
+        },
+        {
+            path: "/Entrance",
+            component: Entrance,
             exact: true
         }
     ];

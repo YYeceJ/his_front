@@ -6,12 +6,16 @@ import {
     QUERY_DOCTOR_SCHEDULE_FAILURE,
     UPDATE_SCHEDULING,
     UPDATE_SCHEDULING_FAILURE,
-    UPDATE_SCHEDULING_SUCCESS
+    UPDATE_SCHEDULING_SUCCESS,
+    QUERY_PATIENT_RECORD,
+    QUERY_PATIENT_RECORD_FAILURE,
+    QUERY_PATIENT_RECORD_SUCCESS
 } from './constants'
 
 const initialState: any = {
     loading: false,
-    scheduleList: []
+    scheduleList: [],
+    patientRecord: [],
 };
 
 export const name = DOCTOR_SCHEDULE_REDUCER;
@@ -44,6 +48,22 @@ export const doctorScheduleReducer = handleActions({
         });
     },
     [UPDATE_SCHEDULING_FAILURE]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            loading: false
+        });
+    },
+    [QUERY_PATIENT_RECORD]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            loading: true
+        });
+    },
+    [QUERY_PATIENT_RECORD_SUCCESS]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            patientRecord:action.payload.data,
+            loading: false
+        });
+    },
+    [QUERY_PATIENT_RECORD_FAILURE]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
             loading: false
         });

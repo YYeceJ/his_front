@@ -1,8 +1,8 @@
 /**
  * Created by yan.zhao on 2019/11/06.
  */
-import { Action, handleActions } from "redux-actions";
-import { UTIL } from "../../utils/utils";
+import {Action, handleActions} from "redux-actions";
+import {UTIL} from "../../utils/utils";
 import {
     HTTP_SEND_FETCH_REQUESTED,
     HTTP_SEND_FETCH_REQUESTED_ERROR,
@@ -12,7 +12,11 @@ import {
     GET_USER_INFO_SUCCEED,
     GET_USER_INFO_ERROR,
     GET_USER_INFO_FAILED,
-    UPDATE_REDUCER
+    UPDATE_REDUCER,
+    REGISTER,
+    REGISTER_SUCCEED,
+    REGISTER_ERROR,
+    REGISTER_FAILED,
 } from "./constants";
 import {LOGIN_REDUCER} from "../../constants";
 
@@ -90,6 +94,33 @@ export const loginReducer = handleActions({
         });
     },
 
+    // 注册
+    [REGISTER]: (state) => {
+        return Object.assign({}, state, {
+            isLoading: true,
+            registerSuccess: false
+        });
+    },
+    [REGISTER_SUCCEED]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            userData: action.payload.data,
+            isLoading: false,
+            registerSuccess: true
+        });
+    },
+    [REGISTER_ERROR]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            isLoading: false,
+            registerSuccess: false
+        });
+    },
+    [REGISTER_FAILED]: (state, action: Action<any>) => {
+        return Object.assign({}, state, {
+            isLoading: false,
+            registerSuccess: false
+        });
+    },
+
     [UPDATE_REDUCER]: (state, action: Action<any>) => {
         return Object.assign({}, state, action.payload);
     }
@@ -97,4 +128,5 @@ export const loginReducer = handleActions({
     requestMsg: "", // 报错信息
     userData: {},
     isLoading: false,
+    registerSuccess: false,
 });

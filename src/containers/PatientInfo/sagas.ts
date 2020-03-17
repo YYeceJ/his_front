@@ -14,6 +14,7 @@ import {
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
 import {utils} from "../../utils/utils";
+import {message} from "antd";
 
 function* queryPatientInfoSaga(action: Action<any>) {
     try {
@@ -45,7 +46,7 @@ function* queryPatientInfoSaga(action: Action<any>) {
 function* updatePatientInfoSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'PUT',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -54,12 +55,13 @@ function* updatePatientInfoSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body:JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + '/patient'
+            url: window.hempConfig.serverPath + '/patient/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(updatePatientInfoSuccess(json));
+            yield message.success("修改信息成功");
         } else {
             errorHandler(json);
             yield put(updatePatientInfoFailure(response.status));

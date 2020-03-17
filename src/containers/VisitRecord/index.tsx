@@ -53,13 +53,14 @@ class VisitRecord extends React.Component<VisitRecordStateProps & VisitRecordDis
 
     constructor(props: VisitRecordStateProps & VisitRecordDispatchProps & VisitRecordOwnProps) {
         super(props);
-        this.state = {
-        }
+        this.state = {}
     }
 
     componentDidMount() {
-        //todo patientid
-        this.props.queryVisitRecord({patientid:1});
+        this.props.queryVisitRecord({
+            patientid: 1,
+            status: 3
+        });
     }
 
     render() {
@@ -119,7 +120,7 @@ class VisitRecord extends React.Component<VisitRecordStateProps & VisitRecordDis
         ];
 
         return (
-            <Table dataSource={visitRecordList} columns={columns} loading={loading} />
+            <Table dataSource={visitRecordList} columns={columns} loading={loading}/>
         );
     }
 }

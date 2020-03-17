@@ -62,8 +62,9 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
 
     handleSearch = () => {
         const values: any = this.props.form.getFieldsValue();
+        console.log("----values----", values);
         let param: any = {};
-        if (values.patientName) {
+        if (!!values.patientName) {
             param.patientname = values.patientName;
         }
         this.props.queryPatientInfo({
@@ -81,6 +82,7 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
             {
                 title: '性别',
                 dataIndex: 'gender',
+                render: (text: any) => (<span>{text === 1 ? "女" : "男"}</span>)
             },
             {
                 title: '出生日期',
@@ -89,10 +91,6 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
             {
                 title: '电话',
                 dataIndex: 'phone',
-            },
-            {
-                title: '初次就医时间',
-                dataIndex: 'jointime',
             }
         ];
 

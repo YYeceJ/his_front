@@ -2,7 +2,7 @@ import {all, call, put, takeEvery, takeLatest} from 'redux-saga/effects';
 import {Action} from 'redux-actions';
 
 import {
-    queryConsultingRoomSuccess, queryConsultingRoomFailure,
+    queryConsultingRoomSuccess, queryConsultingRoomFailure,queryConsultingRoom,
     deleteConsultingRoomSuccess, deleteConsultingRoomFailure,
     updateConsultingRoomSuccess, updateConsultingRoomFailure,
     addConsultingRoomSuccess, addConsultingRoomFailure,
@@ -19,6 +19,7 @@ import {
 
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
+import {utils} from "../../utils/utils";
 
 function* queryConsultingRoomSaga(action: Action<any>) {
     try {
@@ -31,7 +32,7 @@ function* queryConsultingRoomSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + '/consultationRoom'
+            url: window.hempConfig.serverPath + '/consultationRoom' + utils.getUrlParam(action.payload)
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
@@ -50,7 +51,7 @@ function* queryConsultingRoomSaga(action: Action<any>) {
 function* deleteConsultingRoomSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'DELETE',
+            method: "POST",
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -58,12 +59,14 @@ function* deleteConsultingRoomSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            url: window.hempConfig.serverPath + 'consultationRoom/' + action.payload
+            body: JSON.stringify(action.payload),
+            url: window.hempConfig.serverPath + '/consultationRoom/delete'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(deleteConsultingRoomSuccess(json));
+            yield put(queryConsultingRoom());
         } else {
             errorHandler(json);
             yield put(deleteConsultingRoomFailure(response.status));
@@ -77,7 +80,7 @@ function* deleteConsultingRoomSaga(action: Action<any>) {
 function* updateConsultingRoomSaga(action: Action<any>) {
     try {
         const request = {
-            method: 'PUT',
+            method: 'POST',
             credentials: 'include',
             headers: {
                 'Authorization': window.authorization,
@@ -86,12 +89,13 @@ function* updateConsultingRoomSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body: JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + 'consultationRoom'
+            url: window.hempConfig.serverPath + '/consultationRoom/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(updateConsultingRoomSuccess(json));
+            yield put(queryConsultingRoom());
         } else {
             errorHandler(json);
             yield put(updateConsultingRoomFailure(response.status));
@@ -103,7 +107,6 @@ function* updateConsultingRoomSaga(action: Action<any>) {
 }
 
 function* addConsultingRoomSaga(action: Action<any>) {
-    console.log("----action.payload----", action.payload);
     try {
         const request = {
             method: 'POST',
@@ -115,12 +118,13 @@ function* addConsultingRoomSaga(action: Action<any>) {
                 'Cache-Control': ' no-cache'
             },
             body: JSON.stringify(action.payload),
-            url: window.hempConfig.serverPath + 'consultationRoom'
+            url: window.hempConfig.serverPath + '/consultationRoom/save'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(addConsultingRoomSuccess(json));
+            yield put(queryConsultingRoom());
         } else {
             errorHandler(json);
             yield put(addConsultingRoomFailure(response.status));

@@ -9,7 +9,7 @@ import {
     Input,
     Select,
     Col,
-    Row, Spin, DatePicker, TimePicker, InputNumber
+    Row, Spin, DatePicker, TimePicker, InputNumber, Tag
 } from 'antd';
 import {connect} from 'react-redux';
 import {
@@ -108,7 +108,6 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
         this.props.queryScheduling();
         this.props.queryDoctor();
         this.props.queryConsultingRoom();
-        console.log("----userData----", localStorage.getItem("userData"));
     }
 
     handleAdd = () => {
@@ -220,19 +219,19 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                 title: '状态',
                 dataIndex: 'status',
                 render: ((_: any, record: any) => {
-                    let status = "";
+                    let status:any;
                     switch (record.status) {
                         case 0:
-                            status = "未预约";
+                            status = <Tag color="magenta">未预约</Tag>;
                             break;
                         case 1:
-                            status = "已预约";
+                            status = <Tag color="cyan">已预约</Tag>;
                             break;
                         case 2:
-                            status = "就诊中";
+                            status =  <Tag color="green">就诊中</Tag>;
                             break;
                         case 3:
-                            status = "已过期";
+                            status = <Tag color="volcano">已过期</Tag>;
                             break;
                     }
                     return status;
@@ -252,7 +251,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                                 <Divider type="vertical"/>
                                 <Popconfirm
                                     title="确定删除排班？"
-                                    onConfirm={() => this.props.deleteScheduling({schedulingId: record.schedulingId})}
+                                    onConfirm={() => this.props.deleteScheduling({schedulingId: record.schedulingid})}
                                     okText="确定"
                                     cancelText="取消"
                                 >
@@ -283,6 +282,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                             <FormItem key="consultingRoomId_S" {...formLayout} label="诊室">
                                 {form.getFieldDecorator('consultingRoomId_S', {})(
                                     <Select
+                                        allowClear={true}
                                         showSearch
                                         style={{
                                             width: '100%',
@@ -302,6 +302,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                             <FormItem key="doctorId_S" {...formLayout} label="医生">
                                 {form.getFieldDecorator('doctorId_S', {})(
                                     <Select
+                                        allowClear={true}
                                         style={{
                                             width: '100%',
                                         }}
@@ -348,6 +349,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                             ]
                         })(
                             <Select
+                                allowClear={true}
                                 style={{
                                     width: '100%',
                                 }}
@@ -371,6 +373,7 @@ class SchedulingManagement extends React.Component<SchedulingManagementStateProp
                             ]
                         })(
                             <Select
+                                allowClear={true}
                                 style={{
                                     width: '100%',
                                 }}

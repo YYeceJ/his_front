@@ -2,7 +2,7 @@ import {all, call, put, takeEvery, takeLatest} from 'redux-saga/effects';
 import {Action} from 'redux-actions';
 
 import {
-    querySchedulingSuccess, querySchedulingFailure,
+    querySchedulingSuccess, querySchedulingFailure, queryScheduling,
     deleteSchedulingSuccess, deleteSchedulingFailure,
     updateSchedulingSuccess, updateSchedulingFailure,
     addSchedulingSuccess, addSchedulingFailure,
@@ -22,6 +22,7 @@ import {
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
 import {utils} from "../../utils/utils";
+import {message} from "antd";
 
 function* querySchedulingSaga(action: Action<any>) {
     try {
@@ -61,15 +62,17 @@ function* deleteSchedulingSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            body:JSON.stringify(action.payload),
+            body: JSON.stringify(action.payload),
             url: window.hempConfig.serverPath + '/scheduling/delete'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
-        if (response.ok) {
+        if (json.success) {
             yield put(deleteSchedulingSuccess(json));
+            yield put(queryScheduling());
         } else {
             errorHandler(json);
+            message.error(json.message);
             yield put(deleteSchedulingFailure(response.status));
         }
     } catch (error) {
@@ -89,13 +92,14 @@ function* updateSchedulingSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            body:JSON.stringify(action.payload),
+            body: JSON.stringify(action.payload),
             url: window.hempConfig.serverPath + '/scheduling/modify'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(updateSchedulingSuccess(json));
+            yield put(queryScheduling());
         } else {
             errorHandler(json);
             yield put(updateSchedulingFailure(response.status));
@@ -117,13 +121,14 @@ function* addSchedulingSaga(action: Action<any>) {
                 'Content-Type': 'application/json',
                 'Cache-Control': ' no-cache'
             },
-            body:JSON.stringify(action.payload),
+            body: JSON.stringify(action.payload),
             url: window.hempConfig.serverPath + '/scheduling/save'
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         let json = yield response.json();
         if (response.ok) {
             yield put(addSchedulingSuccess(json));
+            yield put(queryScheduling());
         } else {
             errorHandler(json);
             yield put(addSchedulingFailure(response.status));

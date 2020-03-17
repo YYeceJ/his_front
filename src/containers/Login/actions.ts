@@ -8,7 +8,11 @@ import {
     GET_USER_INFO_SUCCEED,
     GET_USER_INFO_ERROR,
     GET_USER_INFO_FAILED,
-    UPDATE_REDUCER
+    REGISTER,
+    REGISTER_SUCCEED,
+    REGISTER_ERROR,
+    REGISTER_FAILED,
+    UPDATE_REDUCER,
 } from "./constants";
 
 export const sendRequestData = createAction<any>(HTTP_SEND_FETCH_REQUESTED);
@@ -20,5 +24,10 @@ export const getUserInfo = createAction(GET_USER_INFO);
 export const getUserInfoSucceed = createAction<any>(GET_USER_INFO_SUCCEED);
 export const getUserInfoError = createAction<any>(GET_USER_INFO_ERROR);
 export const getUserInfoFailed = createAction<any>(GET_USER_INFO_FAILED);
+
+export const register = createAction(REGISTER);
+export const registerSucceed = createAction<any>(REGISTER_SUCCEED);
+export const registerError = createAction<any>(REGISTER_ERROR);
+export const registerFailed = createAction<any>(REGISTER_FAILED);
 
 export const updateReducer = createAction<any>(UPDATE_REDUCER);

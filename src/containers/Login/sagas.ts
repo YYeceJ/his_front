@@ -1,15 +1,24 @@
 import {call, put, takeEvery} from "redux-saga/effects";
 import {Action} from "redux-actions";
-import {HTTP_SEND_FETCH_REQUESTED, GET_USER_INFO} from "./constants";
+import {HTTP_SEND_FETCH_REQUESTED, GET_USER_INFO, REGISTER} from "./constants";
 import {
     sendRequestDataError,
     sendRequestDataFailed,
-    sendRequestDataSucceed, getUserInfo, getUserInfoError, getUserInfoFailed, getUserInfoSucceed,
+    sendRequestDataSucceed,
+    getUserInfo,
+    getUserInfoError,
+    getUserInfoFailed,
+    getUserInfoSucceed,
+    register,
+    registerSucceed, registerError, registerFailed,
 } from "./actions";
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
+import {message} from "antd";
 
 function* sendRequestData(action: Action<any>) {
+    const identity = localStorage.getItem("identity");
+    const url = identity === "patient" ? "/patient/login" : "/doctor/login";
     try {
         const param = action.payload;
         const request = {
@@ -22,13 +31,12 @@ function* sendRequestData(action: Action<any>) {
             },
             body: JSON.stringify(param),
             timeout: 20000,
-            url: `${window.hempConfig.serverPath}/doctor/login`
+            url: `${window.hempConfig.serverPath}` + `${url}`
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
         if (response.ok) {
             const json = yield response.json();
             localStorage.setItem("authorization", "Bearer " + json.data);
-            console.log("localstorage存储完成");
             window.authorization = localStorage.getItem("authorization");
             yield put(sendRequestDataSucceed(json));
             yield put(getUserInfo());
@@ -45,6 +53,8 @@ function* sendRequestData(action: Action<any>) {
 }
 
 function* requestUserInfo() {
+    const identity = localStorage.getItem("identity");
+    const url = identity === "patient" ? "/patient/profile" : "/doctor/profile";
     try {
         const req = {
             method: "GET",
@@ -55,7 +65,7 @@ function* requestUserInfo() {
                 "Content-Type": "application/json",
                 "Cache-Control": " no-cache"
             },
-            url: `${window.hempConfig.serverPath}/doctor/profile`
+            url: `${window.hempConfig.serverPath}${url}`
         };
         const response = (yield call(autoRefreshTokenFetch, req)) as Response;
         const json = yield response.json();
@@ -72,8 +82,45 @@ function* requestUserInfo() {
     }
 }
 
+function* registerSaga(action: Action<any>) {
+    try {
+        const req = {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Authorization": window.authorization,
+                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+                "Cache-Control": " no-cache"
+            },
+            body: JSON.stringify(action.payload),
+            url: `${window.hempConfig.serverPath}/patient/register`
+        };
+
+        const response = (yield call(autoRefreshTokenFetch, req)) as Response;
+        console.log("----response----", response);
+        const json = yield response.json();
+        if (response.ok && json) {
+            if (json.success) {
+                yield put(registerSucceed(json));
+                yield localStorage.setItem("registerSuccess", "true");
+                yield message.success("注册成功，请登录");
+            } else {
+                message.error(json.message);
+            }
+        } else {
+            yield put(registerError(json));
+        }
+    } catch (error) {
+        localStorage.removeItem("authorization");
+        errorHandler(error);
+        yield put(registerFailed(error));
+    }
+}
+
 
 export default function* loginSagas() {
     yield takeEvery(HTTP_SEND_FETCH_REQUESTED, sendRequestData);
     yield takeEvery(GET_USER_INFO, requestUserInfo);
+    yield takeEvery(REGISTER, registerSaga);
 }

@@ -8,6 +8,7 @@ import doctorScheduleSagas from "./containers/DoctorSchedule/sagas";
 import patientInfoSagas from "./containers/PatientInfo/sagas";
 import visitRecordSagas from "./containers/VisitRecord/sagas";
 import loginSagas from "./containers/Login/sagas";
+import appointVisitSagas from "./containers/AppointVisit/sagas";
 
 export default function* rootSaga() {
     yield all([
@@ -20,6 +21,7 @@ export default function* rootSaga() {
         fork(patientInfoSagas),
         fork(visitRecordSagas),
         fork(loginSagas),
+        fork(appointVisitSagas),
         // fork(team4Saga)
     ]);
 };

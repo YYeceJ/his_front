@@ -2,7 +2,7 @@ import {all, call, put, takeEvery, takeLatest} from 'redux-saga/effects';
 import {Action} from 'redux-actions';
 
 import {
-    deleteDepartmentSuccess, deleteDepartmentFailure,
+    deleteDepartmentSuccess, deleteDepartmentFailure,queryDepartment,
     updateDepartmentSuccess, updateDepartmentFailure,
     addDepartmentSuccess, addDepartmentFailure,
     queryDepartmentSuccess, queryDepartmentFailure,
@@ -37,6 +37,7 @@ function* deleteDepartmentSaga(action: Action<any>) {
         let json = yield response.json();
         if (response.ok) {
             yield put(deleteDepartmentSuccess(json));
+            yield put(queryDepartment());
         } else {
             errorHandler(json);
             yield put(deleteDepartmentFailure(response.status));
@@ -65,6 +66,7 @@ function* updateDepartmentSaga(action: Action<any>) {
         let json = yield response.json();
         if (response.ok) {
             yield put(updateDepartmentSuccess(json));
+            yield put(queryDepartment());
         } else {
             errorHandler(json);
             yield put(updateDepartmentFailure(response.status));
@@ -93,6 +95,7 @@ function* addDepartmentSaga(action: Action<any>) {
         let json = yield response.json();
         if (response.ok) {
             yield put(addDepartmentSuccess(json));
+            yield put(queryDepartment());
         } else {
             errorHandler(json);
             yield put(addDepartmentFailure(response.status));

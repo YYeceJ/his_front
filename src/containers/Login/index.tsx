@@ -6,18 +6,19 @@ import * as React from "react";
 import style from "./style.scss";
 import {Layout, Button, Input, Form, Row, Col,} from "antd";
 import {connect} from "react-redux";
-import {sendRequestData, updateReducer} from "./actions";
+import {sendRequestData, updateReducer, register} from "./actions";
 import {push, replace} from "react-router-redux";
 import {Link, RouteComponentProps} from "react-router-dom";
 
 interface LoginOwnProps extends RouteComponentProps<any> {
-    route?: any,
+    route?: any
 }
 
 interface LoginStateProps {
     requestMsg?: any; // 接口请求报错信息
     userData?: any; // 学生信息
     isLoading?: any; // 接口响应成功标志
+    registerSuccess?: any; // 接口响应成功标志
 }
 
 interface LoginDispatchProps {
@@ -26,6 +27,7 @@ interface LoginDispatchProps {
     getVersionSuccessFun?: Function; // 获取版本信息成功
     updateReducer?: Function;   // 更新reducer
     gotoMainPageFun?: Function;
+    register?: Function;
 }
 
 interface LoginState {
@@ -33,6 +35,7 @@ interface LoginState {
     loginPass?: any; // 密码
     errorMsg?: string; // 校验提示文字
     isDisable?: boolean; // 登录按钮禁用标志
+    registering?: boolean; // 登录按钮禁用标志
 }
 
 @(connect(
@@ -41,6 +44,7 @@ interface LoginState {
             requestMsg: state.loginReducer.requestMsg,
             userData: state.loginReducer.userData,
             isLoading: state.loginReducer.isLoading,
+            registerSuccess: state.loginReducer.registerSuccess,
         }
     ),
     (dispatch: any) => (
@@ -50,6 +54,9 @@ interface LoginState {
             },
             updateReducer: (param: any) => {
                 dispatch(updateReducer(param));
+            },
+            register: (param: any) => {
+                dispatch(register(param));
             },
             gotoMainPageFun: () => {
                 dispatch(replace('/MainPage'));
@@ -67,6 +74,7 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
             loginPass: "",
             errorMsg: "",
             isDisable: false,
+            registering: false,
         };
 
     }
@@ -81,6 +89,12 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
         // 获取学生信息成功跳转至首页
         if (this.props.userData !== nextProps.userData && nextProps.userData) {
             this.props.history.push("/MainPage");
+        }
+
+        if (this.props.registerSuccess !== nextProps.registerSuccess && nextProps.registerSuccess) {
+            this.setState({
+                registering: false
+            })
         }
     }
 
@@ -111,8 +125,10 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
         } else {
             const requestParam = {
                 account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+                phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
                 password: loginPass
             };
+
             this.props.sendRequestData(requestParam);
         }
 
@@ -125,8 +141,41 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
         }
     }
 
+    register = () => {
+        this.setState({
+            registering: true
+        })
+    }
+
+    registerPatient = () => {
+        const {loginName, loginPass} = this.state;
+        const identity = localStorage.getItem("identity");
+        let requestParam: any = {};
+        if (loginName === "" && loginPass === "") {
+            this.setState({errorMsg: "用户名或密码不能为空！"});
+        } else if (loginName.length < 7 || loginName.length > 20) {
+            this.setState({errorMsg: "请输入7-20位用户名"});
+        } else if (loginPass.length < 8 || loginPass.length > 20) {
+            this.setState({errorMsg: "请输入8-20位密码"});
+        } else {
+            if (identity === "doctor") {
+                requestParam = {
+                    account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+                    password: loginPass
+                };
+            } else {
+                requestParam = {
+                    phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+                    password: loginPass
+                };
+            }
+            this.props.register(requestParam);
+        }
+    }
+
     render() {
-        const {errorMsg, isDisable, loginName} = this.state;
+        const {errorMsg, isDisable, loginName, registering} = this.state;
+        const identity = localStorage.getItem("identity");
         return (
             <div className={style.page}>
                 <div className={style.loginBody}>
@@ -138,7 +187,7 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
                                 type="text"
                                 value={loginName}
                                 onChange={this.handleUsernameChange}
-                                placeholder="请输入账号"
+                                placeholder={identity === "doctor" ? "请输入账号" : "请输入手机号"}
                             />
                         </Row>
                         <Row>
@@ -151,8 +200,17 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
                             />
                         </Row>
                         {errorMsg && <div className={style.errorMsg}>{errorMsg}</div>}
-                        <Button className={isDisable ? style.disable : undefined}
-                                onClick={this.sendValueData}>{isDisable ? "正在登录..." : "登录"}</Button>
+                        {
+                            registering ?
+                                <Button onClick={this.registerPatient}>注册</Button>
+                                :
+                                <Button className={isDisable ? style.disable : undefined}
+                                        onClick={this.sendValueData}>{isDisable ? "正在登录..." : "登录"}</Button>
+                        }
+                        {
+                            identity === "patient" &&
+                            <p>还没有账号？点击<span onClick={this.register}>注册</span></p>
+                        }
                     </div>
                 </div>
             </div>

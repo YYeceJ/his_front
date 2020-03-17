@@ -55,35 +55,45 @@ interface PatientInfoState {
     )
 ) as any)
 class PatientInfo extends React.Component<PatientInfoStateProps & PatientInfoDispatchProps & PatientInfoOwnProps, PatientInfoState> {
+    private userData = JSON.parse(localStorage.getItem("userData"));
 
     constructor(props: PatientInfoStateProps & PatientInfoDispatchProps & PatientInfoOwnProps) {
         super(props);
-        this.state = {
-        }
+        this.state = {}
     }
 
     componentDidMount() {
-        //TODO patientid
-        this.props.queryPatientInfo({patientid:1});
+        this.props.form.setFieldsValue({
+            patientname: this.userData.patientName,
+            gender: this.userData.gender,
+            birthDate: moment(this.userData.birthDate,"YYYY-MM-DD")
+        })
+    }
+
+    formatDate = (date: string) => {
+        if (!!date) {
+            const dateArr = date.split("-");
+            return new Date(Number(dateArr[0]), parseInt(dateArr[1]) - 1, Number(dateArr[2]));
+        } else {
+            return undefined;
+        }
     }
 
     handleSubmitEdit = () => {
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
-                //TODO patientid
                 this.props.updatePatientInfo({
-                    patientid:1,
-                    patientname:values.papatientname,
-                    gender:values.gender,
-                    phone:values.phone,
-                    birthdate:values.birthdate
+                    patientId: parseInt(this.userData.patientId),
+                    patientName: values.patientname,
+                    gender: parseInt(values.gender),
+                    birthDate: moment(values.birthdate).format("YYYY-MM-DD")
                 });
             }
         })
     }
 
     render() {
-        const {patientInfo, form, loading} = this.props;
+        const {form, loading} = this.props;
         const formLayout = {
             labelCol: {
                 span: 5,
@@ -95,42 +105,32 @@ class PatientInfo extends React.Component<PatientInfoStateProps & PatientInfoDis
 
         return (
             <Spin spinning={loading}>
-                <Form style={{marginTop: 20, marginBottom: 20}} onSubmit={this.handleSubmitEdit}>
+                <Form style={{marginTop: 20, marginBottom: 20}}>
                     <FormItem key="patientname" {...formLayout} label="姓名">
                         {form.getFieldDecorator('patientname', {
-                            initialValue: patientInfo.patientname,
                             rules: [{
                                 required: true,
                                 message: "请输入姓名"
                             }]
                         })(
-                            <Input />
-                        )}
-                    </FormItem>
-                    <FormItem key="phone" {...formLayout} label="手机号">
-                        {form.getFieldDecorator('phone', {
-                            initialValue: patientInfo.phone,
-                            rules: [{
-                                required: true,
-                                message: "请输入手机号"
-                            }]
-                        })(
-                            <Input />
+                            <Input/>
                         )}
                     </FormItem>
                     <FormItem key="gender" {...formLayout} label="性别">
                         {form.getFieldDecorator('gender', {
-                            initialValue: patientInfo.gender ? patientInfo.gender.toString() : ""
+                            rules: [{
+                                required: true,
+                                message: "请输入性别"
+                            }]
                         })(
-                            <Radio.Group >
-                                <Radio value="1">女</Radio>
-                                <Radio value="2">男</Radio>
+                            <Radio.Group>
+                                <Radio value={1}>女</Radio>
+                                <Radio value={2}>男</Radio>
                             </Radio.Group>
                         )}
                     </FormItem>
                     <FormItem key="birthdate" {...formLayout} label="出生日期">
                         {form.getFieldDecorator('birthDate', {
-                            initialValue: moment(patientInfo.birthdate),
                             rules: [{
                                 required: true,
                                 message: "请输入姓名"
@@ -139,7 +139,7 @@ class PatientInfo extends React.Component<PatientInfoStateProps & PatientInfoDis
                             <DatePicker placeholder={"请选择出生日期"}/>
                         )}
                     </FormItem>
-                    <Button htmlType="submit" type="primary" style={{marginLeft:100}}>
+                    <Button htmlType="submit" type="primary" style={{marginLeft:100}} onClick={this.handleSubmitEdit}>
                         提交
                     </Button>
                 </Form>

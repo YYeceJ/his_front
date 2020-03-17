@@ -53,13 +53,16 @@ export class MainPage extends React.Component<MainPageStateProps & MainPageOwnPr
         })
     }
 
+    haveAuth = () => {
+
+    }
+
     render() {
-        const routes = this.generateRoutes();
-        console.log("----allRoutes----", this.allRoutes);
+        const userData = JSON.parse(localStorage.getItem("userData"));
+        console.log("----userData----", userData);
         return (
             <Layout>
                 <Sider collapsible trigger={null} collapsed={this.state.collapsed} >
-                    <div className="logo" />
                     <Menu theme="dark" mode={this.state.mode} defaultSelectedKeys={['home']}>
                         <Menu.Item key="home" >
                             <Link to="/"><Icon type="home" /><span className="nav-text">Home</span></Link>
@@ -93,15 +96,6 @@ export class MainPage extends React.Component<MainPageStateProps & MainPageOwnPr
                         </Menu.Item>
                     </Menu>
                 </Sider>
-                {/*<Layout>*/}
-                {/*    <Header style={{ background: '#fff', padding: 0 }} >*/}
-                {/*        <Icon className="trigger" type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} onClick={this.toggle} />*/}
-                {/*    </Header>*/}
-
-                {/*    <Content style={{ margin: '0 16px' }}>*/}
-                {/*        { React.createElement(Switch, null, [...routes, <Route key='ru_nomatch' component={NoMatch}/>]) }*/}
-                {/*    </Content>*/}
-                {/*</Layout>*/}
              </Layout>
         );
     }

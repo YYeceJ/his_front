@@ -1,5 +1,9 @@
 @import "../../styles/common";
 
 .text {
-    @include ellipsis;
+    max-width: 500px;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
 }

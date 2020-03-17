@@ -12,7 +12,13 @@ import {
     Row, Spin
 } from 'antd';
 import {connect} from 'react-redux';
-import {queryConsultingRoom, deleteConsultingRoom, updateConsultingRoom, addConsultingRoom, queryDepartment} from './actions';
+import {
+    queryConsultingRoom,
+    deleteConsultingRoom,
+    updateConsultingRoom,
+    addConsultingRoom,
+    queryDepartment
+} from './actions';
 import {RouteComponentProps} from 'react-router-dom';
 import {FormComponentProps} from "antd/lib/form";
 
@@ -39,6 +45,7 @@ interface ConsultingRoomManagementDispatchProps {
 interface ConsultingRoomManagementState {
     modalVisible?: boolean;
     modalFunction?: string;
+    currentRoomId?: number;
 }
 
 @(connect(
@@ -75,7 +82,8 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
         super(props);
         this.state = {
             modalVisible: false,
-            modalFunction: ""
+            modalFunction: "",
+            currentRoomId: 0
         }
     }
 
@@ -94,14 +102,11 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
     handleUpdate = (record: any) => {
         this.setState({
             modalVisible: true,
-            modalFunction: "update"
+            modalFunction: "update",
+            currentRoomId: record.roomid
         }, () => {
             this.props.form.setFieldsValue({
-                doctorName: record.doctorName,
-                skilledField: record.skilledField,
-                departmentName: record.departmentName,
-                title: record.title,
-                practiceExperience: record.practiceExperience
+                consultingRoomName_A: record.consultingroomname
             })
         })
     }
@@ -110,19 +115,17 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
         this.props.form.validateFields((err: any, values: any) => {
             if (!err) {
                 const param = {
-                    consultingroomname: values.consultingRoomName_A,
-                    departmentid: values.departmentId_A.split("//")[0],
-                    departmentname: values.departmentId_A.split("//")[1],
+                    consultingRoomName: values.consultingRoomName_A,
                 }
                 if (this.state.modalFunction === "update") {
-                    this.props.updateConsultingRoom(param);
+                    this.props.updateConsultingRoom({roomId: this.state.currentRoomId, ...param});
                 } else {
                     this.props.addConsultingRoom(param);
                 }
+                this.setState({
+                    modalVisible: false
+                })
             }
-        })
-        this.setState({
-            modalVisible: false
         })
     }
 
@@ -133,19 +136,18 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
     }
 
     handleSearch = () => {
-        this.props.form.validateFields((err: any, values: any) => {
-            if (!err) {
-                const param = {
-                    consultingRoomName: values.consultingRoomName_S,
-                    departmentId: values.departmentId_S
-                }
-                this.props.queryConsultingRoom(param);
+        const values = this.props.form.getFieldsValue();
+        let param: any;
+        if (!!values.consultingRoomName_S) {
+            param = {
+                consultingRoomName: values.consultingRoomName_S
             }
-        })
+        }
+        this.props.queryConsultingRoom(param);
     }
 
     render() {
-        const { form, departmentList, consultingRoomList,loading} = this.props;
+        const {form, consultingRoomList, loading} = this.props;
         const {modalVisible} = this.state;
         const columns = [
 
@@ -163,18 +165,20 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
                 valueType: 'option',
                 render: (_: any, record: any) => (
                     <>
-                        <a onClick={() => this.handleUpdate}>
+                        <a onClick={() => this.handleUpdate(record)}>
                             修改
                         </a>
                         <Divider type="vertical"/>
                         <Popconfirm
                             title="确定删除诊室？"
-                            onConfirm={() => this.props.deleteConsultingRoom(record.doctorId)}
+                            onConfirm={() => this.props.deleteConsultingRoom({
+                                roomId: record.roomid
+                            })}
                             okText="确定"
                             cancelText="取消"
                         >
                             <a href="#">删除</a>
-                        </Popconfirm>,
+                        </Popconfirm>
                     </>
                 ),
             },
@@ -190,30 +194,12 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
 
         return (
             <Spin spinning={loading}>
-                <Form style={{marginTop:20,marginBottom:20}}>
+                <Form style={{marginTop: 20, marginBottom: 20}}>
                     <Row>
-                        <Col  span={6}>
+                        <Col span={6}>
                             <FormItem key="consultingRoomName_S" {...formLayout} label="诊室名称">
                                 {form.getFieldDecorator('consultingRoomName_S', {})(
-                                    <Input/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={6}>
-                            <FormItem key="departmentId_S" {...formLayout} label="所属科室">
-                                {form.getFieldDecorator('departmentId_S', {})(
-                                    <Select
-                                        style={{
-                                            width: '100%',
-                                        }}
-                                    >
-                                        {
-                                            departmentList && departmentList.map((item: any) => (
-                                                <Option key={item.departmentid}
-                                                        value={item.departmentid}>{item.name}</Option>
-                                            ))
-                                        }
-                                    </Select>,
+                                    <Input placeholder={"请输入诊室名称"}/>
                                 )}
                             </FormItem>
                         </Col>
@@ -222,34 +208,23 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
                         </Col>
                     </Row>
                 </Form>
-                <Button onClick={this.handleAdd} style={{marginBottom:20}} type={"primary"}>添加诊室</Button>
+                <Button onClick={this.handleAdd} style={{marginBottom: 20}} type={"primary"}>添加诊室</Button>
                 <Table dataSource={consultingRoomList} columns={columns}/>;
                 <Modal
                     destroyOnClose
-                    title="医生管理"
+                    title="诊室管理"
                     visible={modalVisible}
                     onOk={this.handleConfirmPost}
                     onCancel={this.handleCancelPost}
                 >
                     <FormItem key="consultingRoomName_A" {...formLayout} label="诊室名称">
-                        {form.getFieldDecorator('consultingRoomName_A', {})(
+                        {form.getFieldDecorator('consultingRoomName_A', {
+                            rules: [{
+                                required: true,
+                                message: "请输入诊室名称"
+                            }]
+                        })(
                             <Input/>
-                        )}
-                    </FormItem>
-                    <FormItem key="departmentId_A" {...formLayout} label="所属科室">
-                        {form.getFieldDecorator('departmentId_A', {})(
-                            <Select
-                                style={{
-                                    width: '100%',
-                                }}
-                            >
-                                {
-                                    departmentList && departmentList.map((item: any) => (
-                                        <Option key={item.departmentid}
-                                                value={item.departmentid + "//" + item.name}>{item.name}</Option>
-                                    ))
-                                }
-                            </Select>,
                         )}
                     </FormItem>
                 </Modal>

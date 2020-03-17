@@ -9,14 +9,15 @@ import {
     Input,
     Select,
     Col,
-    Row, Spin, DatePicker
+    Row, Spin, DatePicker, Tag
 } from 'antd';
 import {connect} from 'react-redux';
-import {queryDoctorSchedule, updateScheduling} from './actions';
+import {queryDoctorSchedule, updateScheduling,queryPatientRecord} from './actions';
 import {RouteComponentProps} from 'react-router-dom';
 import {FormComponentProps} from "antd/lib/form";
 import moment from "moment";
 import {UTIL, utils} from "../../utils/utils";
+import style from './style.scss';
 
 const FormItem = Form.Item;
 const {Option} = Select;
@@ -28,24 +29,29 @@ interface DoctorScheduleOwnProps extends RouteComponentProps<any>, FormComponent
 interface DoctorScheduleStateProps {
     loading?: any,
     scheduleList?: any,
+    patientRecord?: any,
 }
 
 interface DoctorScheduleDispatchProps {
     queryDoctorSchedule?: Function,
     updateScheduling?: Function,
+    queryPatientRecord?: Function,
 }
 
 interface DoctorScheduleState {
     modalVisible?: boolean;
     currentScheduleId?: number;
     registerMedicalModalVisible?: boolean;
+    patientRecordModalVisible?: boolean;
+    currentRecord?: any;
 }
 
 @(connect(
     (state: any) => (
         {
             loading: state.doctorScheduleReducer.loading,
-            scheduleList: state.doctorScheduleReducer.scheduleList
+            scheduleList: state.doctorScheduleReducer.scheduleList,
+            patientRecord: state.doctorScheduleReducer.patientRecord,
         }
     ),
     (dispatch: any) => (
@@ -56,6 +62,9 @@ interface DoctorScheduleState {
             updateScheduling: (param: any) => {
                 dispatch(updateScheduling(param));
             },
+            queryPatientRecord: (param: any) => {
+                dispatch(queryPatientRecord(param));
+            }
         }
     )
 ) as any)
@@ -68,6 +77,8 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
             modalVisible: false,
             currentScheduleId: 0,
             registerMedicalModalVisible: false,
+            patientRecordModalVisible: false,
+            currentRecord: {},
         }
     }
 
@@ -81,7 +92,6 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
         if (values.date) {
             param.date = utils.formatDateTime(values.date);
         }
-        console.log("----param----" + param);
         this.props.queryDoctorSchedule({
             doctorid: this.userData.doctorid,
             ...param
@@ -118,7 +128,7 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
 
     registerMedical = (id: number) => {
         this.setState({
-            registerMedicalModalVisible:true,
+            registerMedicalModalVisible: true,
             currentScheduleId: id
         })
     }
@@ -128,17 +138,16 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
         this.props.updateScheduling({
             schedulingId: this.state.currentScheduleId,
             status: 1,
-            patientPhone:values.patientPhone,
-            patientName:values.patientName
+            patientPhone: values.patientPhone
         })
         this.setState({
-            registerMedicalModalVisible:false
+            registerMedicalModalVisible: false
         })
     }
 
     handleCancelRegisterMedical = () => {
         this.setState({
-            registerMedicalModalVisible:false
+            registerMedicalModalVisible: false
         })
     }
 
@@ -149,8 +158,19 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
         })
     }
 
+    queryPatientRecord = (record: any) => {
+        this.props.queryPatientRecord({
+            status: 3,
+            patientid: record.patientid
+        })
+        this.setState({
+            currentRecord: record,
+            patientRecordModalVisible: true
+        })
+    }
+
     render() {
-        const {scheduleList, form, loading} = this.props;
+        const {scheduleList, form, loading, patientRecord} = this.props;
         const columns = [
             {
                 title: '诊室',
@@ -177,22 +197,33 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
                 title: '状态',
                 dataIndex: 'status',
                 render: ((_: any, record: any) => {
-                    let status = "";
+                    let status:any;
                     switch (record.status) {
                         case 0:
-                            status = "未预约";
+                            status = <Tag color="magenta">未预约</Tag>;
                             break;
                         case 1:
-                            status = "已预约";
+                            status = <Tag color="cyan">已预约</Tag>;
                             break;
                         case 2:
-                            status = "就诊中";
+                            status =  <Tag color="green">就诊中</Tag>;
                             break;
                         case 3:
-                            status = "已过期";
+                            status = <Tag color="volcano">已过期</Tag>;
                             break;
                     }
-                    return <span>{status}</span>;
+                    return status;
+                })
+            },
+            {
+                title: '患者姓名',
+                dataIndex: 'patientname',
+                render: ((text: any, record: any) => {
+                    if (record.status === 0) {
+                        return <span>--</span>;
+                    } else {
+                        return <a onClick={() => this.queryPatientRecord(record)}>{text}</a>;
+                    }
                 })
             },
             {
@@ -212,12 +243,38 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
                             status = <a onClick={() => this.handleRecordMedical(record.schedulingid)}>录入电子病历</a>;
                             break;
                         case 3:
-                            status = <span>-</span>;
+                            status = <span>--</span>;
                             break;
                     }
                     return <span>{status}</span>;
                 })
             },
+        ];
+        const patientRecordColumns = [
+            {
+                title: '病人姓名',
+                dataIndex: 'patientname',
+            },
+            {
+                title: '就诊日期',
+                dataIndex: 'date'
+            },
+            {
+                title: '病人主诉',
+                dataIndex: 'chiefcomplaint',
+            },
+            {
+                title: '检查结果',
+                dataIndex: 'examinationresult',
+            },
+            {
+                title: '诊断结果',
+                dataIndex: 'diagnosticresult',
+            },
+            {
+                title: '医生意见',
+                dataIndex: 'doctoropinion',
+            }
         ];
 
         const formLayout = {
@@ -291,16 +348,30 @@ class DoctorSchedule extends React.Component<DoctorScheduleStateProps & DoctorSc
                     onOk={this.handleConfirmRegisterMedical}
                     onCancel={this.handleCancelRegisterMedical}
                 >
-                    <FormItem key="patientPhone" {...formLayout} label="手机号">
+                    <FormItem key="patientName" {...formLayout} label="患者姓名">
+                        {form.getFieldDecorator('patientName', {})(
+                            <Input/>
+                        )}
+                    </FormItem>
+                    <FormItem key="patientPhone" {...formLayout} label="患者手机号">
                         {form.getFieldDecorator('patientPhone', {})(
                             <Input/>
                         )}
                     </FormItem>
-                    <FormItem key="patientName" {...formLayout} label="姓名">
-                        {form.getFieldDecorator('patientName', {})(
-                            <Input/>
-                            )}
-                    </FormItem>
+                </Modal>
+                <Modal
+                    className={style.patientRecordModal}
+                    destroyOnClose
+                    title="患者就诊记录"
+                    visible={this.state.patientRecordModalVisible}
+                    footer={null}
+                    onCancel={() => {
+                        this.setState({
+                            patientRecordModalVisible:false
+                        })
+                    }}
+                >
+                    <Table dataSource={patientRecord} loading={loading}  columns={patientRecordColumns}/>
                 </Modal>
             </Spin>
 

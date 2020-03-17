@@ -89,7 +89,6 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
     }
 
     handleUpdate = (record: any) => {
-        console.log("----handleUpdate----");
         this.setState({
             modalVisible: true,
             modalFunction: "update",
@@ -110,7 +109,6 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
                     introduction: values.introduction
                 }
                 if (this.state.modalFunction === "update") {
-                    console.log("----currentRecord----", this.state.currentRecord);
                     this.props.updateDepartment({departmentId:this.state.currentRecord.departmentid,...param});
                 } else {
                     this.props.addDepartment(param);
@@ -132,7 +130,7 @@ class DepartmentManagement extends React.Component<DepartmentManagementStateProp
     handleSearch = () => {
         const values: any = this.props.form.getFieldsValue();
         let param: any = {};
-        if (values.doctorName_S) {
+        if (values.departmentName_S) {
             param.name = values.departmentName_S;
         }
         this.props.queryDepartment(param);
