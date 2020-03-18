@@ -22,6 +22,7 @@ import "core-js/modules/es6.array.iterator";
 // import antd css
 import '!style-loader!css-loader!antd/dist/antd.min.css';
 import {RootContainer} from "./containers/RootContainer";
+import {Entrance} from "./containers/Entrance";
 
 // init hempConfig
 window.hempConfig = new HEMPConfig;

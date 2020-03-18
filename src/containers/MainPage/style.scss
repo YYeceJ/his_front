@@ -1,0 +1,26 @@
+@import "../../styles/common.scss";
+
+.pageContainer {
+    :global {
+        .ant-menu-root.ant-menu-inline, .ant-menu-root.ant-menu-vertical, .ant-menu-root.ant-menu-vertical-left, .ant-menu-root.ant-menu-vertical-right, .ant-menu-sub.ant-menu-inline {
+            margin-top: 30px !important;
+        }
+
+        .ant-menu-vertical .ant-menu-item:not(:last-child) {
+            margin-bottom: 28px !important;
+        }
+
+        .ant-layout-sider-children {
+            height: 100%;
+            margin-top: -.1px;
+            padding-top: .1px;
+            background-color: #ffffff !important;
+            border-right: 1px solid #e8e8e8;
+        }
+
+        .ant-layout-content {
+            padding: 20px;
+            background: #ffffff;
+        }
+    }
+}

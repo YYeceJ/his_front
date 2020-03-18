@@ -16,7 +16,7 @@ import {
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
 import {utils} from "../../utils/utils";
-import {message} from "antd";
+import {message, notification} from "antd";
 
 function* queryScheduleSaga(action: Action<any>) {
     try {

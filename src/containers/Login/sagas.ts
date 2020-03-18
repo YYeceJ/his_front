@@ -14,7 +14,7 @@ import {
 } from "./actions";
 import {autoRefreshTokenFetch} from "../../utils/autoRefreshTokenFetch";
 import {errorHandler} from "../../utils/errorHandler";
-import {message} from "antd";
+import {message, notification} from "antd";
 
 function* sendRequestData(action: Action<any>) {
     const identity = localStorage.getItem("identity");
@@ -34,15 +34,18 @@ function* sendRequestData(action: Action<any>) {
             url: `${window.hempConfig.serverPath}` + `${url}`
         };
         const response = (yield call(autoRefreshTokenFetch, request)) as Response;
-        if (response.ok) {
-            const json = yield response.json();
+        const json = yield response.json();
+
+        if (json.success) {
             localStorage.setItem("authorization", "Bearer " + json.data);
             window.authorization = localStorage.getItem("authorization");
             yield put(sendRequestDataSucceed(json));
             yield put(getUserInfo());
         } else {
-            const json = yield response.json();
-            console.log(json);
+            notification.error({
+                message: `请求错误 `,
+                description: json.messag,
+            });
             yield put(sendRequestDataError(json));
         }
     } catch (error) {
