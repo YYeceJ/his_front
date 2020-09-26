@@ -21,7 +21,7 @@ export const visitRecordReducer = handleActions({
     },
     [QUERY_VISIT_RECORD_SUCCESS]: (state, action: Action<any>) => {
         return Object.assign({}, state, {
-            visitRecordList: action.payload.data.records,
+            visitRecordList: action.payload.data,
             loading: false
         });
     },

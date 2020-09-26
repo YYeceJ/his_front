@@ -44,7 +44,7 @@ function* sendRequestData(action: Action<any>) {
         } else {
             notification.error({
                 message: `请求错误 `,
-                description: json.messag,
+                description: json.message,
             });
             yield put(sendRequestDataError(json));
         }
@@ -101,7 +101,6 @@ function* registerSaga(action: Action<any>) {
         };
 
         const response = (yield call(autoRefreshTokenFetch, req)) as Response;
-        console.log("----response----", response);
         const json = yield response.json();
         if (response.ok && json) {
             if (json.success) {

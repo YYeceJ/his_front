@@ -57,18 +57,15 @@ class PatientInfoManagement extends React.Component<PatientInfoManagementStatePr
     }
 
     componentDidMount() {
-        this.props.queryPatientInfo();
+        this.props.queryPatientInfo({
+            patientname:""
+        });
     }
 
     handleSearch = () => {
-        const values: any = this.props.form.getFieldsValue();
-        console.log("----values----", values);
-        let param: any = {};
-        if (!!values.patientName) {
-            param.patientname = values.patientName;
-        }
+        const patientName: any = this.props.form.getFieldsValue().patientName || "";
         this.props.queryPatientInfo({
-            patientname: param.patientname
+            patientname:patientName
         });
     }
 

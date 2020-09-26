@@ -140,7 +140,7 @@ class ConsultingRoomManagement extends React.Component<ConsultingRoomManagementS
         let param: any;
         if (!!values.consultingRoomName_S) {
             param = {
-                consultingRoomName: values.consultingRoomName_S
+                consultingroomname: values.consultingRoomName_S
             }
         }
         this.props.queryConsultingRoom(param);

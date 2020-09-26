@@ -116,27 +116,20 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
     // 点击登录
     sendValueData = () => {
         const {loginName, loginPass} = this.state;
-        if (loginName === "" && loginPass === "") {
-            this.setState({errorMsg: "用户名或密码不能为空！"});
-        } else if (loginName.length < 7 || loginName.length > 20) {
-            this.setState({errorMsg: "请输入7-20位用户名"});
-        } else if (loginPass.length < 8 || loginPass.length > 20) {
-            this.setState({errorMsg: "请输入8-20位密码"});
-        } else {
-            const requestParam = {
-                account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
-                phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
-                password: loginPass
-            };
-
-            this.props.sendRequestData(requestParam);
-        }
-
+        const requestParam = {
+            account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+            phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+            password: loginPass
+        };
+        this.props.sendRequestData(requestParam);
     }
 
     // 回车键登录
     keyLogin = (e: any) => {
         if (e.keyCode === 13) {
+            if(this.state.registering){
+
+            }
             this.sendValueData();
         }
     }
@@ -151,26 +144,18 @@ export default class Login extends React.Component<LoginOwnProps & LoginStatePro
         const {loginName, loginPass} = this.state;
         const identity = localStorage.getItem("identity");
         let requestParam: any = {};
-        if (loginName === "" && loginPass === "") {
-            this.setState({errorMsg: "用户名或密码不能为空！"});
-        } else if (loginName.length < 7 || loginName.length > 20) {
-            this.setState({errorMsg: "请输入7-20位用户名"});
-        } else if (loginPass.length < 8 || loginPass.length > 20) {
-            this.setState({errorMsg: "请输入8-20位密码"});
+        if (identity === "doctor") {
+            requestParam = {
+                account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+                password: loginPass
+            };
         } else {
-            if (identity === "doctor") {
-                requestParam = {
-                    account: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
-                    password: loginPass
-                };
-            } else {
-                requestParam = {
-                    phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
-                    password: loginPass
-                };
-            }
-            this.props.register(requestParam);
+            requestParam = {
+                phone: loginName.replace(/\s/g, ""),// 过滤掉用户名中的空格
+                password: loginPass
+            };
         }
+        this.props.register(requestParam);
     }
 
     render() {

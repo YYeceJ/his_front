@@ -34,14 +34,7 @@ export interface MainPageState {
 }
 
 export class MainPage extends React.Component<MainPageStateProps & MainPageOwnProps, MainPageState> {
-
-    allRoutes: Array<{ path: string, component?: any, exact?: Boolean, render?: (props: RouteComponentProps<any>) => React.ReactNode }>;
     private identity = localStorage.getItem("identity");
-    private routeTemp: any = [];
-    private userData = JSON.parse(localStorage.getItem("userData"));
-    private authList = this.userData.auth;
-
-
     constructor(props: MainPageStateProps & MainPageOwnProps) {
         super(props);
         this.state = {
@@ -51,11 +44,13 @@ export class MainPage extends React.Component<MainPageStateProps & MainPageOwnPr
     }
 
     isHaveAuth = (authArr: Array<any>, code: string) => {
-        const index = authArr.findIndex((item: any) => item.code === code);
-        if (index === -1) {
-            return false;
-        } else {
-            return true;
+        if(authArr){
+            const index = authArr.findIndex((item: any) => item.code === code);
+            if (index === -1) {
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 
@@ -63,7 +58,7 @@ export class MainPage extends React.Component<MainPageStateProps & MainPageOwnPr
         const userData = JSON.parse(localStorage.getItem("userData"));
         const identity = localStorage.getItem("identity");
         const {auth} = userData;
-        const {selectedKey, selectedMenuIndex} = this.state;
+        const {selectedMenuIndex} = this.state;
         const menuList: Array<any> = [
             {
                 key: "doctorManagement",
@@ -104,7 +99,7 @@ export class MainPage extends React.Component<MainPageStateProps & MainPageOwnPr
                 key: "DoctorSchedule",
                 navText: "我的排班",
                 component: <DoctorScheduleForm/>,
-                auth: this.isHaveAuth(auth, "SCHEDULING_MANAGEMENT"),
+                auth: this.isHaveAuth(auth, "DOCTOR_SCHEDULE"),
                 path: "/DoctorSchedule"
             },
             {
